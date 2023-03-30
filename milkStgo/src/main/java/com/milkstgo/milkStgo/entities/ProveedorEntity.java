@@ -19,7 +19,7 @@ public class ProveedorEntity {
     private String codigo;
     private String nombre;
     private String categoria;
-    private int afecto_a_retencion;
+    private String retencion;
     private int frecuencia;
     private int entregas_manana;
     private int entregas_tarde;

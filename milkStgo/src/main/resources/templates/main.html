@@ -12,6 +12,9 @@
                 background: -webkit-linear-gradient(to right, #36d1dc, #5b86e5); /* Chrome 10-25, Safari 5.1-6 */
                 background: linear-gradient(to right, #36d1dc, #5b86e5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
             }
+            .letra{
+                color: #ffffff;
+            }
         </style>
     </head>
 
@@ -24,12 +27,8 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-link active" aria-current="page" href="/">Menú</a>
-                        <a class="nav-link" href="#">Proveedores</a>
-                        <a class="nav-link" href="#">Importacion acopio</a>
-                        <a class="nav-link" href="#">Importacion valores</a>
-                        <a class="nav-link" href="#">Planilla de pagos</a>
+                    <div class="navbar-nav ms-auto">
+                        <a class="nav-link letra" aria-current="page" href="/">Menú</a>
                     </div>
                 </div>
             </div>
@@ -39,35 +38,36 @@
         <div class="container my-5">
             <div class="row">
                 <!-- Tarjeta para el menu de proveedores -->
-                <div class="card col-sm-2 col-md-3 mx-3" style="width: 18rem;">
-                    <img src="..." class="card-img-top" alt="...">
+                <div class="card col-sm-2 col-md-3 mx-3 text-center" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title text-center">Proveedores</h5>
                         <p class="card-text">Ingresa y visualiza los proveedores ya existentes</p>
+                        <a class="btn btn-info letra gap-2" href="/addProveedor" role="button"><b>Agregar</b></a>
+                        <a class="btn btn-info letra gap-2" href="/viewProveedor" role="button"><b>Visualizar</b></a>
                     </div>
                 </div>
                 <!-- Tarjeta para el menu de acopio -->
-                <div class="card col-md-3 mx-3" style="width: 18rem;">
-                    <img src="..." class="card-img-top" alt="...">
+                <div class="card col-md-3 mx-3 text-center" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title text-center">Acopio de Leche</h5>
-                        <p class="card-text">Ingresa un acopio de Leche</p>
+                        <p class="card-text">Ingresa un archivo .csv para el acopio de Leche</p>
+                        <a class="btn btn-info letra" href="#" role="button"><b>Acceder</b></a>
                     </div>
                 </div>
                 <!-- Tarjeta para el menu de importacion valores grasa y solidos -->
-                <div class="card col-md-3 mx-3" style="width: 18rem;">
-                    <img src="..." class="card-img-top" alt="...">
+                <div class="card col-md-3 mx-3 text-center" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title text-center">Importacion de Valores</h5>
-                        <p class="card-text">Ingresa el archivo con el porcentaje de grasa y solidos totales en la leche</p>
+                        <p class="card-text">Ingresa un archivo .csv para la grasa y solidos</p>
+                        <a class="btn btn-info letra" href="#" role="button"><b>Acceder</b></a>
                     </div>
                 </div>
                 <!-- Tarjeta para el menu de planilla de pagos -->
-                <div class="card col-md-3 mx-3" style="width: 18rem;">
-                    <img src="..." class="card-img-top" alt="...">
+                <div class="card col-md-3 mx-3 text-center" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title text-center">Planilla de Pagos</h5>
                         <p class="card-text">Crea la planilla de pagos y visualizala</p>
+                        <a class="btn btn-info letra" href="#" role="button"><b>Acceder</b></a>
                     </div>
                 </div>
             </div>
