@@ -5,6 +5,8 @@ import com.milkstgo.milkStgo.repositories.ProveedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class ProveedorService {
 
@@ -23,4 +25,9 @@ public class ProveedorService {
         proveedor.setEntregas_tarde(0);
         proveedorRepository.save(proveedor);
     }
+
+    public ArrayList<ProveedorEntity> obtenerProveedores(){
+        return (ArrayList<ProveedorEntity>) proveedorRepository.findAll();
+    }
+
 }

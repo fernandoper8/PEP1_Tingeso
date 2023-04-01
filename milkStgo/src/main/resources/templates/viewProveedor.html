@@ -32,5 +32,50 @@
             </div>
         </nav>
 
+        <div class="container my-5">
+            <div class="card px-3 py-3">
+                <h3 class="text-center">Listado de Proveedores</h3>
+
+                <!-- Ver si la base de datos esta vacia o no -->
+                <th:block th:if="${proveedores.isEmpty()}">
+                    <div class="container text-center">
+                        <h4><b>No se encuentran datos!</b></h4>
+                    </div>
+                </th:block>
+                <!-- Caso contrario, se encuentran datos -->
+
+                <th:block th:if="${not proveedores.isEmpty()}">
+                    <div class="container">
+                        <table class="table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th scope="col">Codigo</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Categoria</th>
+                                    <th scope="col">Retencion</th>
+                                    <th scope="col">Frecuencia de Entregas</th>
+                                    <th scope="col">Ha entregado en la mañana?</th>
+                                    <th scope="col">Ha entregado en la tarde?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr scope="row" class="text-center" th:each="proveedor : ${proveedores}">
+                                    <td th:text="${proveedor.codigo}"></td>
+                                    <td th:text="${proveedor.nombre}"></td>
+                                    <td th:text="${proveedor.categoria}"></td>
+                                    <td th:text="${proveedor.retencion}"></td>
+                                    <td th:text="${proveedor.frecuencia}"></td>
+                                    <td th:text="${proveedor.entregas_manana == 0 ? 'No' : 'Si'}"></td>
+                                    <td th:text="${proveedor.entregas_tarde == 0 ? 'No' : 'Si'}"></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </th:block>
+
+            </div>
+        </div>
+
     </body>
 </html>
