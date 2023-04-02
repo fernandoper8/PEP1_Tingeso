@@ -37,8 +37,6 @@ public class ProveedorController {
     @GetMapping("/viewProveedor")
     public String viewProveedor(Model model){
         ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
-        // if length(proveedores) == 0
-        //  hacer algo para mostrar en la pantalla que no hay lol
         model.addAttribute("proveedores", proveedores);
         return "viewProveedor";
     }

@@ -39,7 +39,8 @@
                 <!-- Ver si la base de datos esta vacia o no -->
                 <th:block th:if="${proveedores.isEmpty()}">
                     <div class="container text-center">
-                        <h4><b>No se encuentran datos!</b></h4>
+                        <h5 class="my-1"><b>No se encuentran datos!</b></h5>
+                        <a class="btn btn-info letra my-2" href="/addProveedor" role="button"><b>Agregar Proveedores</b></a>
                     </div>
                 </th:block>
                 <!-- Caso contrario, se encuentran datos -->
