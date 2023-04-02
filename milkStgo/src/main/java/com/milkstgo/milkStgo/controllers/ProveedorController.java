@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.util.ArrayList;
 
@@ -25,8 +27,10 @@ public class ProveedorController {
     public String nuevoProveedor(@RequestParam("nombre") String nombre,
                                     @RequestParam("codigo") String codigo,
                                     @RequestParam("retencion") String retencion,
-                                    @RequestParam("categoria") String categoria){
+                                    @RequestParam("categoria") String categoria,
+                                    RedirectAttributes redirectAttributes){
         proveedorService.guardarProveedor(nombre,codigo,retencion,categoria);
+        redirectAttributes.addFlashAttribute("mensaje", "Proveedor registrado correctamente");
         return "redirect:/addProveedor";
     }
 
