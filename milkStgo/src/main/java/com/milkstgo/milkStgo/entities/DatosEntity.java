@@ -8,16 +8,15 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name="acopio")
+@Table(name = "datos")
 @NoArgsConstructor
 @AllArgsConstructor
-public class AcopioEntity {
+public class DatosEntity {
     @Id
     @NotNull
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_acopio;
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private int id_datos;
     private String id_proveedor;
-    private String fecha;
-    private String kls_leche;
-    private String turno;
+    private int por_grasa;
+    private int por_solidos;
 }

@@ -20,11 +20,10 @@ public class ProveedorService {
         proveedor.setRetencion(retencion);
         proveedor.setCategoria(categoria);
         // Proveedor nuevo, no se registra una entrega de leche hasta que se carge un acopio
-        proveedor.setFrecuencia(0);
-        proveedor.setEntregas_manana(0);
-        proveedor.setEntregas_tarde(0);
         proveedorRepository.save(proveedor);
     }
+
+
 
     public ArrayList<ProveedorEntity> obtenerProveedores(){
         return (ArrayList<ProveedorEntity>) proveedorRepository.findAll();

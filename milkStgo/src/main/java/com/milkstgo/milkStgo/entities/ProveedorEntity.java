@@ -14,13 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProveedorEntity {
-    @Id
+
     @NotNull
+    @Id
     private String codigo;
     private String nombre;
     private String categoria;
     private String retencion;
-    private int frecuencia;
-    private int entregas_manana;
-    private int entregas_tarde;
 }

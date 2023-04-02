@@ -1,9 +1,8 @@
 package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.AcopioEntity;
-import com.milkstgo.milkStgo.entities.ProveedorEntity;
-import com.milkstgo.milkStgo.repositories.AcopioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.milkstgo.milkStgo.entities.DatosEntity;
+import com.milkstgo.milkStgo.repositories.DatosRepository;
 import lombok.Generated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,17 +13,20 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 @Service
-public class AcopioService {
+public class DatosService {
+
     @Autowired
-    AcopioRepository acopioRepository;
-    public ArrayList<AcopioEntity> obtenerData(){
-        return (ArrayList<AcopioEntity>) acopioRepository.findAll();
+    DatosRepository datosRepository;
+
+    public ArrayList<DatosEntity> obtenerData(){
+        return (ArrayList<DatosEntity>) datosRepository.findAll();
     }
 
     private final Logger logg = LoggerFactory.getLogger(AcopioService.class);
@@ -54,7 +56,7 @@ public class AcopioService {
     public void leerCsv(String direccion){
         String texto = "";
         BufferedReader bf = null;
-        acopioRepository.deleteAll();
+        datosRepository.deleteAll();
 
         try{
 
@@ -67,7 +69,7 @@ public class AcopioService {
                     count = 0;
                 }
                 else{
-                    guardarDataDB(bfRead.split(";")[0], bfRead.split(";")[1], bfRead.split(";")[2], bfRead.split(";")[3]);
+                    guardarDataDB(bfRead.split(";")[0], bfRead.split(";")[1], bfRead.split(";")[2]);
                     temp = temp + "\n" + bfRead;
                 }
             }
@@ -86,18 +88,15 @@ public class AcopioService {
         }
     }
 
-    public void guardarData(AcopioEntity data){
-        acopioRepository.save(data);
+    public void guardarData(DatosEntity data){
+        datosRepository.save(data);
     }
 
-    public void guardarDataDB(String fecha, String turno, String proveedor, String kls_leche) {
-        AcopioEntity newData = new AcopioEntity();
-        newData.setId_proveedor(proveedor);
-        newData.setFecha(fecha);
-        newData.setTurno(turno);
-        newData.setKls_leche(kls_leche);
-        guardarData(newData);
-
+    public void guardarDataDB(String proveedor, String grasa, String solidos) {
+        DatosEntity newDatos = new DatosEntity();
+        newDatos.setId_proveedor(proveedor);
+        newDatos.setPor_grasa(Integer.parseInt(grasa));
+        newDatos.setPor_solidos(Integer.parseInt(solidos));
+        guardarData(newDatos);
     }
-
 }

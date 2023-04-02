@@ -53,9 +53,6 @@
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Categoria</th>
                                     <th scope="col">Retencion</th>
-                                    <th scope="col">Frecuencia de Entregas</th>
-                                    <th scope="col">Ha entregado en la mañana?</th>
-                                    <th scope="col">Ha entregado en la tarde?</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,9 +61,6 @@
                                     <td th:text="${proveedor.nombre}"></td>
                                     <td th:text="${proveedor.categoria}"></td>
                                     <td th:text="${proveedor.retencion}"></td>
-                                    <td th:text="${proveedor.frecuencia}"></td>
-                                    <td th:text="${proveedor.entregas_manana == 0 ? 'No' : 'Si'}"></td>
-                                    <td th:text="${proveedor.entregas_tarde == 0 ? 'No' : 'Si'}"></td>
                                 </tr>
                             </tbody>
 
