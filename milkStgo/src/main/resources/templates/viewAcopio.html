@@ -60,7 +60,7 @@
           <tbody>
           <tr scope="row" class="text-center" th:each="acopio : ${acopios}">
             <td th:text="${acopio.id_acopio}"></td>
-            <td th:text="${acopio.id_proveedor}"></td>
+            <td th:text="${acopio.getId_proveedor}"></td>
             <td th:text="${acopio.kls_leche}"></td>
             <td th:text="${acopio.turno == 'M' ? 'Mañana' : acopio.turno == 'T' ? 'Tarde' : 'F'}"></td>
             <td th:text="${acopio.fecha}"></td>

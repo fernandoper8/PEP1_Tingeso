@@ -1,13 +1,11 @@
 package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.AcopioEntity;
-import com.milkstgo.milkStgo.entities.ProveedorEntity;
 import com.milkstgo.milkStgo.repositories.AcopioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.Generated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +24,10 @@ public class AcopioService {
     public ArrayList<AcopioEntity> obtenerData(){
         return (ArrayList<AcopioEntity>) acopioRepository.findAll();
     }
+
+    //public ArrayList<AcopioEntity> obtenerDataProveedor(String codigo){
+        //return (ArrayList<AcopioEntity>) acopioRepository.findById_proveedor(codigo);
+    //}
 
     private final Logger logg = LoggerFactory.getLogger(AcopioService.class);
     @Generated
