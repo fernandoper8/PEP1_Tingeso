@@ -29,6 +29,10 @@ public class DatosService {
         return (ArrayList<DatosEntity>) datosRepository.findAll();
     }
 
+    public void eliminarDatos(){
+        datosRepository.deleteAll();
+    }
+
     private final Logger logg = LoggerFactory.getLogger(AcopioService.class);
     @Generated
     public String guardar(MultipartFile file){
@@ -98,5 +102,14 @@ public class DatosService {
         newDatos.setPor_grasa(Integer.parseInt(grasa));
         newDatos.setPor_solidos(Integer.parseInt(solidos));
         guardarData(newDatos);
+    }
+
+    public DatosEntity obtenerDataPorProveedor(String proveedor){
+        for (DatosEntity data : datosRepository.findAll()){
+            if (data.getId_proveedor().equals(proveedor)){
+                return data;
+            }
+        }
+        return null;
     }
 }

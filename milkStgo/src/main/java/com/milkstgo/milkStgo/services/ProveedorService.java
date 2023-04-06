@@ -23,8 +23,6 @@ public class ProveedorService {
         proveedorRepository.save(proveedor);
     }
 
-
-
     public ArrayList<ProveedorEntity> obtenerProveedores(){
         return (ArrayList<ProveedorEntity>) proveedorRepository.findAll();
     }

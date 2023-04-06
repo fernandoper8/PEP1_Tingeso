@@ -25,9 +25,9 @@ public class AcopioService {
         return (ArrayList<AcopioEntity>) acopioRepository.findAll();
     }
 
-    //public ArrayList<AcopioEntity> obtenerDataProveedor(String codigo){
-        //return (ArrayList<AcopioEntity>) acopioRepository.findById_proveedor(codigo);
-    //}
+    public void eliminarDatos(){
+        acopioRepository.deleteAll();
+    }
 
     private final Logger logg = LoggerFactory.getLogger(AcopioService.class);
     @Generated
@@ -101,5 +101,17 @@ public class AcopioService {
         guardarData(newData);
 
     }
+
+    public ArrayList<AcopioEntity> obtenerAcopiosPorProveedor(String proveedor){
+        ArrayList<AcopioEntity> acopios = obtenerData();
+        ArrayList<AcopioEntity> acopiosProveedor = new ArrayList<AcopioEntity>();
+        for(AcopioEntity acopio : acopios){
+            if(acopio.getId_proveedor().equals(proveedor)){
+                acopiosProveedor.add(acopio);
+            }
+        }
+        return acopiosProveedor;
+    }
+
 
 }
