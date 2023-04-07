@@ -24,9 +24,9 @@ public class PagoEntity {
     private String codigo;        
        
     // Datos relacionados a leche
-    private int totalKlsLeche;        
+    private int totalKlsLeche;    
+    private float promedioDiarioKls;     
     private int frecuencia;             
-    private float promedioDiarioKls;  
     private int bonoFrecuencia;        
 
     // Porcentajes de variacion
