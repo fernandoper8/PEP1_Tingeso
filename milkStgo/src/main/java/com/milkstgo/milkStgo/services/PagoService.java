@@ -44,11 +44,8 @@ public class PagoService {
 
     public void crearPlanilla(){
         ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
-        ArrayList<AcopioEntity> acopios = acopioService.obtenerData();
-        ArrayList<DatosEntity> datos = datosService.obtenerData();
         int pagoAcopio = 0;
         int klsLeche = 0;
-        float bonoFrecuencia = 0;
         int bonoFreq = 0;
         int turnoM = 0;
         int turnoT = 0;
@@ -94,17 +91,17 @@ public class PagoService {
             // Datos relacionados a porcentajes de variacion
             ArrayList <Integer> datosVariacion = new ArrayList<Integer>();
             if(pagoAnterior.getComparado() == 0){
-                porcentajeVariacionLeche = (int) ((porcentajeVariacionLeche(pagoAnterior.getTotalKlsLeche(), klsLeche))*100);
-                porcentajeVariacionGrasa = (int) ((porcentajeVariacionGrasa(pagoAnterior.getPorGrasa(), datosProveedor.getPor_grasa())*100)); //ARREGLAR
+                porcentajeVariacionLeche = (int) ((((double)klsLeche - (double)pagoAnterior.getTotalKlsLeche()) / (double)pagoAnterior.getTotalKlsLeche()) * -100);
+                porcentajeVariacionGrasa = (int) ((porcentajeVariacionGrasa(pagoAnterior.getPorGrasa(), datosProveedor.getPor_grasa())*100));
                 porcentajeVariacionSolidos = (int) ((porcentajeVariacionSolidos(pagoAnterior.getPorSolidos(), datosProveedor.getPor_solidos())*100));
-                datosVariacion.add(porcentajeVariacionLeche); // porcentaje leche
-                datosVariacion.add(calcularDescuentoLeche(pagoAcopio, klsLeche, pagoAnterior)); // descuento leche
+                datosVariacion.add(porcentajeVariacionLeche); 
+                datosVariacion.add(calcularDescuentoLeche(pagoAcopio, klsLeche, pagoAnterior)); 
                 datosVariacion.add(datosProveedor.getPor_grasa());
-                datosVariacion.add(porcentajeVariacionGrasa); // porcentaje variacion grasa
-                datosVariacion.add(calcularDescuentoGrasa(pagoAcopio, datosProveedor.getPor_grasa(), pagoAnterior)); // descuento grasa
+                datosVariacion.add(porcentajeVariacionGrasa); 
+                datosVariacion.add(calcularDescuentoGrasa(pagoAcopio, datosProveedor.getPor_grasa(), pagoAnterior)); 
                 datosVariacion.add(datosProveedor.getPor_solidos());
-                datosVariacion.add(porcentajeVariacionSolidos); // porcentaje variacion solidos
-                datosVariacion.add(calcularDescuentoSolidos(pagoAcopio, datosProveedor.getPor_solidos(), pagoAnterior)); // descuento solidos
+                datosVariacion.add(porcentajeVariacionSolidos); 
+                datosVariacion.add(calcularDescuentoSolidos(pagoAcopio, datosProveedor.getPor_solidos(), pagoAnterior)); 
                 descuentos = calcularDescuentos(pagoAcopio, calcularDescuentoLeche(pagoAcopio, klsLeche, pagoAnterior),
                                     calcularDescuentoGrasa(pagoAcopio, datosProveedor.getPor_grasa(), pagoAnterior),
                                     calcularDescuentoSolidos(pagoAcopio, datosProveedor.getPor_solidos(), pagoAnterior));
@@ -140,10 +137,6 @@ public class PagoService {
             nuevoPago.setFecha(new Date());
             guardarPago(nuevoPago);
 
-            // IMPRIMIR NOMBRE Y PAGOACOPIO
-            System.out.println("Nombre: " + proveedor.getNombre());
-            System.out.println("Pago Acopio: " + pagoAcopio);
-
             // reinicio variables para el resto de proveedores
             klsLeche = 0;
             turnoM = 0;
@@ -178,11 +171,9 @@ public class PagoService {
     // hacer prueba unitaria
     int calcularDescuentos(int pagoAcopio, int dctoLeche, int dctoGrasa, int dctoSolidos){
         int descuentos = 0;
-        System.out.println("Pago acopio: " + pagoAcopio + " dcto leche: " + dctoLeche + " dcto grasa: " + dctoGrasa + " dcto solidos: " + dctoSolidos);
         descuentos += dctoLeche;
         descuentos += dctoGrasa;
         descuentos += dctoSolidos;
-        System.out.println("Descuentos: " + descuentos);
         return descuentos;
     }
 
@@ -204,15 +195,14 @@ public class PagoService {
     // hacer prueba unitaria
     public int calcularDescuentoLeche(int pagoAcopio, int klsLecheActual, PagoEntity pagoAnterior){
         double porcentajeLeche = porcentajeVariacionLeche(pagoAnterior.getTotalKlsLeche(), klsLecheActual);
-        System.out.println("Porcentaje leche: " + porcentajeLeche + "%" + "PagoAcopio: " + pagoAcopio);
-        System.out.println("Dcto leche: " + pagoAcopio * porcentajeLeche);
         return (int)(pagoAcopio * porcentajeLeche);
     }
 
     // hacer prueba unitaria
     public double porcentajeVariacionLeche(int klsLecheAnterior, int klsLecheActual){
-        int porcentaje = Math.round((klsLecheActual * 100)/klsLecheAnterior);
-        System.out.println("Porcentaje variacion leche: " + porcentaje);
+        if(klsLecheAnterior-klsLecheActual <= 0) // variacion positiva o igual a 0
+            return 0;
+        double porcentaje = (((double)klsLecheActual - (double)klsLecheAnterior) / (double)klsLecheAnterior) * -100;
         if(porcentaje >= 0 && porcentaje <= 8){
             return 0;
         }else if(porcentaje >= 9 && porcentaje <= 25){
@@ -228,14 +218,12 @@ public class PagoService {
     // hacer prueba unitaria
     public int calcularDescuentoGrasa(int pagoAcopio, int porGrasa, PagoEntity pagoAnterior){
         double porcentajeGrasa = porcentajeVariacionGrasa(pagoAnterior.getPorGrasa(), porGrasa);
-        System.out.println("Dcto grasa: " + pagoAcopio * porcentajeGrasa);
         return (int)(pagoAcopio * porcentajeGrasa);
     }
 
     // hacer prueba unitaria
     public double porcentajeVariacionGrasa(int porAnterior, int porActual){
         int porcentaje = porAnterior - porActual;
-        System.out.println("Porcentaje variacion grasa: " + porcentaje);
         if(porcentaje >= 0 && porcentaje <= 15){
             return 0;
         }else if(porcentaje >= 16 && porcentaje <= 25){
@@ -251,14 +239,12 @@ public class PagoService {
     // hacer prueba unitaria
     public int calcularDescuentoSolidos(int pagoAcopio, int porSolidos, PagoEntity pagoAnterior){
         double porcentajeSolidos = porcentajeVariacionSolidos(pagoAnterior.getPorSolidos(), porSolidos);
-        System.out.println("Dcto solidos: " + pagoAcopio * porcentajeSolidos);
         return (int) (pagoAcopio * porcentajeSolidos);
     }
     
     // hacer prueba unitaria
     public double porcentajeVariacionSolidos(int porAnterior, int porActual){
         int porcentaje = porAnterior - porActual;
-        System.out.println("Porcentaje variacion solidos: " + porcentaje);
         if(porcentaje >= 0 && porcentaje <= 6){
             return 0;
         }else if(porcentaje >= 7 && porcentaje <= 12){
@@ -276,7 +262,6 @@ public class PagoService {
         int pagoCat = pagoPorCategoria(cat);
         int pagoGrasa = pagoPorGrasa(porGrasa);
         int pagoSolidos = pagoPorSolidos(porSolidos);
-        System.out.println(((klsLecheActual * pagoCat) + (klsLecheActual * pagoGrasa) + (klsLecheActual * pagoSolidos)));
         return ((klsLecheActual * pagoCat) + (klsLecheActual * pagoGrasa) + (klsLecheActual * pagoSolidos));
     }
     
@@ -333,15 +318,13 @@ public class PagoService {
         return pago;
     }
 
-    // Recibe un vector con valores a los que calcular la retencion mediante un ciclo
+    // hacer prueba unitaria
     public int retencion(int pagoTotal){
         int retencion = 0;
         if(pagoTotal > 950000)
             retencion = (int) (pagoTotal * 0.13);
         return retencion;
     }
-
-    
 
     // hacer prueba unitaria
     public int calculoRetencion(int valor){

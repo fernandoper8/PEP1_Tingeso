@@ -1,6 +1,5 @@
 package com.milkstgo.milkStgo.services;
 
-import com.milkstgo.milkStgo.entities.AcopioEntity;
 import com.milkstgo.milkStgo.entities.DatosEntity;
 import com.milkstgo.milkStgo.repositories.DatosRepository;
 import lombok.Generated;
@@ -13,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
