@@ -23,10 +23,12 @@ public class DatosService {
     @Autowired
     DatosRepository datosRepository;
 
+    // no hacer prueba unitaria
     public ArrayList<DatosEntity> obtenerData(){
         return (ArrayList<DatosEntity>) datosRepository.findAll();
     }
 
+    // no hacer prueba unitaria
     public void eliminarDatos(){
         datosRepository.deleteAll();
     }
@@ -90,10 +92,12 @@ public class DatosService {
         }
     }
 
+    // no hacer prueba unitaria
     public void guardarData(DatosEntity data){
         datosRepository.save(data);
     }
 
+    // no hacer prueba unitaria
     public void guardarDataDB(String proveedor, String grasa, String solidos) {
         DatosEntity newDatos = new DatosEntity();
         newDatos.setId_proveedor(proveedor);
@@ -102,6 +106,7 @@ public class DatosService {
         guardarData(newDatos);
     }
 
+    // no hacer prueba unitaria
     public DatosEntity obtenerDataPorProveedor(String proveedor){
         for (DatosEntity data : datosRepository.findAll()){
             if (data.getId_proveedor().equals(proveedor)){

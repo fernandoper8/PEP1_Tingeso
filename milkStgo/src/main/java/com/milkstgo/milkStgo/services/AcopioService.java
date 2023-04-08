@@ -88,10 +88,12 @@ public class AcopioService {
         }
     }
 
+    // no hacer prueba unitaria
     public void guardarData(AcopioEntity data){
         acopioRepository.save(data);
     }
 
+    // no hacer prueba unitaria
     public void guardarDataDB(String fecha, String turno, String proveedor, String kls_leche) {
         AcopioEntity newData = new AcopioEntity();
         newData.setId_proveedor(proveedor);
@@ -102,6 +104,7 @@ public class AcopioService {
 
     }
 
+    // no hacer prueba unitaria
     public ArrayList<AcopioEntity> obtenerAcopiosPorProveedor(String proveedor){
         ArrayList<AcopioEntity> acopios = obtenerData();
         ArrayList<AcopioEntity> acopiosProveedor = new ArrayList<AcopioEntity>();

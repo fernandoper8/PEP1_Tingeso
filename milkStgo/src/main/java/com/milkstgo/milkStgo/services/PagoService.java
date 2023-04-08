@@ -83,6 +83,7 @@ public class PagoService {
         datosService.eliminarDatos();
     }
 
+    // no hacer prueba unitaria
     public ArrayList<Integer> contarLeche(ArrayList<AcopioEntity> acopiosProveedor){
         ArrayList<Integer> datos = new ArrayList<Integer>();
         int klsLeche = 0;
@@ -135,6 +136,7 @@ public class PagoService {
         return descuentos;
     }
 
+    // no hacer prueba unitaria
     public ArrayList<Integer> asignarVariaciones(ArrayList<Integer> infoEntregas, PagoEntity pagoAnterior, DatosEntity datosProveedor){
         ArrayList<Integer> resultado = new ArrayList<Integer>();
         if(pagoAnterior.getComparado() == 0){ // hay un pago anterior
@@ -147,6 +149,7 @@ public class PagoService {
         return resultado;
     }
 
+    // no hacer prueba unitaria
     public ArrayList<Integer> variacionesPagoAnterior(ArrayList<Integer> infoEntregas, PagoEntity pagoAnterior, DatosEntity datosProveedor){
         ArrayList<Integer> resultado = new ArrayList<Integer>();
         resultado.add( (int) calcularVariacion(pagoAnterior.getTotalKlsLeche(), infoEntregas.get(0)) ); // leche
@@ -158,10 +161,10 @@ public class PagoService {
         resultado.add(calcularVariacionPorcentaje(pagoAnterior.getPorSolidos(), datosProveedor.getPor_solidos())); 
         resultado.add(calcularDescuentoSolidos(infoEntregas.get(2), datosProveedor.getPor_solidos(), pagoAnterior)); 
         resultado.add(calcularDescuentos(infoEntregas, pagoAnterior, datosProveedor)); // descuentos
-
         return resultado;
     }
 
+    // no hacer prueba unitaria
     public ArrayList<Integer> variacionesNoPagoAnterior(DatosEntity datosProveedor){
         ArrayList<Integer> resultado = new ArrayList<Integer>();
         
@@ -192,6 +195,7 @@ public class PagoService {
         return (int)(pagoAcopio * bono);
     }
 
+    // no hacer prueba unitaria
     public ArrayList<Integer> calcularAcopioFinal(ArrayList<Integer> infoEntregas, ProveedorEntity proveedor, DatosEntity datosProveedor, int entregas){
         int pagoAcopio = pagoAcopio(infoEntregas.get(0), proveedor.getCategoria(), datosProveedor.getPor_grasa(), datosProveedor.getPor_solidos());
         int bono = 0;
@@ -203,6 +207,7 @@ public class PagoService {
         return infoEntregas;
     }
 
+    // no hacer prueba unitaria
     public ArrayList<Integer> calcularPagos(ArrayList<Integer> infoEntregas, ArrayList<Integer> datosVariacion){
         ArrayList<Integer> pagos = new ArrayList<Integer>();
         
@@ -382,20 +387,24 @@ public class PagoService {
         }
     }
 
+    // no hacer prueba unitaria
     public void guardarPago(PagoEntity nuevoPago){
         pagoRepository.save(nuevoPago);
     }
 
+    // no hacer prueba unitaria
     public void actualizarPago(PagoEntity pago){
         pagoRepository.save(pago);
     }
 
+    // no hacer prueba unitaria
     public PagoEntity setInfoProveedor(PagoEntity pago, ArrayList<String> datosProveedor){
         pago.setCodigo(datosProveedor.get(0));
         pago.setNombre(datosProveedor.get(1));
         return pago;
     }
 
+    // no hacer prueba unitaria
     public PagoEntity setInfoLeche(PagoEntity pago, ArrayList<Integer> datosLeche){
         pago.setTotalKlsLeche(datosLeche.get(0));
         pago.setFrecuencia(datosLeche.get(1));
@@ -404,6 +413,7 @@ public class PagoService {
         return pago;
     }
 
+    // no hacer prueba unitaria
     public PagoEntity setInfoVariacion(PagoEntity pago, ArrayList<Integer> datosVariacion){
         pago.setPorVariacionLeche(datosVariacion.get(0));
         pago.setDctoVariacionLeche(datosVariacion.get(1));
@@ -416,6 +426,7 @@ public class PagoService {
         return pago;
     }
 
+    // no hacer prueba unitaria
     public PagoEntity setInfoPagos(PagoEntity pago, ArrayList<Integer> datosPago){
         pago.setPagoTotal(datosPago.get(0));
         pago.setMontoRetencion(datosPago.get(1));

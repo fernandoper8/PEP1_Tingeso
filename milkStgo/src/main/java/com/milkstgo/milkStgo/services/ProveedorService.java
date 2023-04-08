@@ -13,6 +13,7 @@ public class ProveedorService {
     @Autowired
     ProveedorRepository proveedorRepository;
 
+    // no hacer prueba unitaria
     public void guardarProveedor(String nombre, String codigo, String retencion, String categoria){
         ProveedorEntity proveedor = new ProveedorEntity();
         proveedor.setNombre(nombre);
@@ -23,6 +24,7 @@ public class ProveedorService {
         proveedorRepository.save(proveedor);
     }
 
+    // no hacer prueba unitaria
     public ArrayList<ProveedorEntity> obtenerProveedores(){
         return (ArrayList<ProveedorEntity>) proveedorRepository.findAll();
     }
