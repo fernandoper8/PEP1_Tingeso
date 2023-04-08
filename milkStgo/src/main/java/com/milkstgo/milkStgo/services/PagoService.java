@@ -24,10 +24,12 @@ public class PagoService {
     @Autowired
     DatosService datosService;
 
+    // no hacer prueba unitaria
     public ArrayList<PagoEntity> obtenerPagos(){
         return (ArrayList<PagoEntity>) pagoRepository.findAll();
     }
 
+    // no hacer prueba unitaria
     public PagoEntity obtenerPagosPorProveedor(String codigo){
         ArrayList<PagoEntity> pagos = obtenerPagos();
         PagoEntity pagosProveedor = new PagoEntity();
@@ -36,68 +38,50 @@ public class PagoService {
                 return pago;
             }
         }
-        pagosProveedor.setComparado(-1);
+        pagosProveedor.setComparado(-1); // no hay pagos anteriores
         return pagosProveedor;
     }
 
-    public void crearPlanilla(){ 
+    // no hacer prueba unitaria
+    public void crearPlanilla(){
+        PagoEntity nuevoPago;
         ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
         for(ProveedorEntity proveedor : proveedores){
             ArrayList<AcopioEntity> acopiosProveedor = acopioService.obtenerAcopiosPorProveedor(proveedor.getCodigo());
             DatosEntity datosProveedor = datosService.obtenerDataPorProveedor(proveedor.getCodigo());
             PagoEntity pagoAnterior = obtenerPagosPorProveedor(proveedor.getCodigo());
-
-            // infoEntregas = {totalKlsLeche, turno, pagoAcopio, bonoPorFrecuencia}
-            ArrayList<Integer> infoEntregas = contarLeche(acopiosProveedor);
-            infoEntregas = calcularAcopioFinal(infoEntregas, proveedor, datosProveedor, acopiosProveedor.size());
-
-            // Datos del proveedor
-            ArrayList <String> informacionProveedor = new ArrayList<String>();
-            informacionProveedor.add(proveedor.getCodigo());
-            informacionProveedor.add(proveedor.getNombre());
-            
-            // Datos relacionados a la leche
-            ArrayList <Integer> datosLeche = new ArrayList<Integer>();
-            datosLeche.add(infoEntregas.get(0));
-            datosLeche.add(acopiosProveedor.size());
-            datosLeche.add(infoEntregas.get(0)/acopiosProveedor.size());
-            datosLeche.add(infoEntregas.get(3));
-
-            // Datos relacionados a porcentajes de variacion
-            ArrayList<Integer> datosVariacion = asignarVariaciones(infoEntregas, pagoAnterior, datosProveedor);
-
-            // Datos relacionados a los pagos
-            ArrayList<Integer> datosPago = calcularPagos(infoEntregas, datosVariacion);
-
-            PagoEntity nuevoPago = new PagoEntity();
+            nuevoPago = new PagoEntity();
+            nuevoPago.setNombre(proveedor.getNombre());
+            nuevoPago.setCodigo(proveedor.getCodigo());
+            nuevoPago.setCategoria(proveedor.getCategoria());
             nuevoPago.setComparado(0);
-            nuevoPago = setInfoProveedor(nuevoPago, informacionProveedor);
-            nuevoPago = setInfoLeche(nuevoPago, datosLeche);
-            nuevoPago = setInfoVariacion(nuevoPago, datosVariacion);
-            nuevoPago = setInfoPagos(nuevoPago, datosPago);
             nuevoPago.setFecha(new Date());
-
+            nuevoPago = setInfoPorEntrega(acopiosProveedor, nuevoPago);
+            nuevoPago.setPorGrasa(datosProveedor.getPor_grasa());
+            nuevoPago.setPorSolidos(datosProveedor.getPor_solidos());
+            nuevoPago = setVariaciones(nuevoPago, pagoAnterior);
+            nuevoPago = setAcopio(nuevoPago);
+            nuevoPago = setDescuentos(nuevoPago, pagoAnterior);
+            nuevoPago = setPagos(nuevoPago); 
             guardarPago(nuevoPago);
+            actualizarPago(pagoAnterior);
         }
-        acopioService.eliminarDatos();
+        acopioService.eliminarAcopios();
         datosService.eliminarDatos();
     }
 
     // no hacer prueba unitaria
-    public ArrayList<Integer> contarLeche(ArrayList<AcopioEntity> acopiosProveedor){
-        ArrayList<Integer> datos = new ArrayList<Integer>();
-        int klsLeche = 0;
-        int turno;
+    public PagoEntity setInfoPorEntrega(ArrayList<AcopioEntity> acopiosProveedor, PagoEntity pago){
+        int totalLeche = 0;
         int turnoM = 0;
         int turnoT = 0;
+        int turno = 0;
         for(AcopioEntity acopio : acopiosProveedor){
-            klsLeche = klsLeche + Integer.parseInt(acopio.getKls_leche());
-            if(acopio.getTurno().equals("M")){
+            totalLeche += Integer.parseInt(acopio.getKls_leche());
+            if(acopio.getTurno().equals("M"))
                 turnoM = 1;
-            }
-            else if(acopio.getTurno().equals("T")){
+            else if(acopio.getTurno().equals("T"))
                 turnoT = 1;
-            }
         }
         if(turnoM == 1 && turnoT == 1){
             turno = 3; // Ambos turnos
@@ -108,214 +92,45 @@ public class PagoService {
         else if(turnoM == 0 && turnoT == 1){
             turno = 1; // Solo tarde
         }
-        else{
-            turno = 0;
-        }
-        datos.add(klsLeche);
-        datos.add(turno);
-        return datos;
-    }
-
-    // hacer prueba unitaria
-    public double calcularVariacion(int datoAnterior, int datoActual){
-        double porcentaje = (((double)datoActual - (double)datoAnterior) / (double)datoAnterior) * -100;
-        return porcentaje;
-    }
-    
-    // hacer prueba unitaria
-    public int calcularVariacionPorcentaje(int porAnterior, int porActual){
-        return porAnterior - porActual;
-    }
-
-    // hacer prueba unitaria
-    public int calcularDescuentos(ArrayList<Integer> infoEntregas, PagoEntity pagoAnterior, DatosEntity datosProveedor){
-        int descuentos = 0;
-        descuentos += calcularDescuentoLeche(infoEntregas.get(2), infoEntregas.get(0), pagoAnterior);
-        descuentos += calcularDescuentoGrasa(infoEntregas.get(2), datosProveedor.getPor_grasa(), pagoAnterior);
-        descuentos += calcularDescuentoSolidos(infoEntregas.get(2), datosProveedor.getPor_solidos(), pagoAnterior);
-        return descuentos;
+        pago.setTotalKlsLeche(totalLeche);
+        pago.setQueTurnos(turno);
+        pago.setFrecuencia(acopiosProveedor.size());
+        pago.setPromedioDiarioKls(totalLeche/acopiosProveedor.size()); 
+        return pago;
     }
 
     // no hacer prueba unitaria
-    public ArrayList<Integer> asignarVariaciones(ArrayList<Integer> infoEntregas, PagoEntity pagoAnterior, DatosEntity datosProveedor){
-        ArrayList<Integer> resultado = new ArrayList<Integer>();
-        if(pagoAnterior.getComparado() == 0){ // hay un pago anterior
-            resultado = variacionesPagoAnterior(infoEntregas, pagoAnterior, datosProveedor); 
-            pagoAnterior.setComparado(-1);
-            actualizarPago(pagoAnterior);
-        }else if(pagoAnterior.getComparado() == -1){ // no hay pago anterior
-            resultado = variacionesNoPagoAnterior(datosProveedor);
+    public PagoEntity setVariaciones(PagoEntity pago, PagoEntity pagoAnterior){
+        if(pagoAnterior.getComparado() == 0){
+            pago.setPorVariacionLeche(calcularVariacionLeche(pagoAnterior.getTotalKlsLeche(), pago.getTotalKlsLeche()));
+            pago.setPorVariacionGrasa(calcularVariacionPorcentaje(pagoAnterior.getPorGrasa(), pago.getPorGrasa()));
+            pago.setPorVariacionSolidos(calcularVariacionPorcentaje(pagoAnterior.getPorSolidos(), pago.getPorSolidos()));
+        }else if(pagoAnterior.getComparado() == -1){
+            pago.setPorVariacionLeche(0);
+            pago.setPorVariacionGrasa(0);
+            pago.setPorVariacionSolidos(0);
         }
-        return resultado;
+        return pago;
     }
 
     // no hacer prueba unitaria
-    public ArrayList<Integer> variacionesPagoAnterior(ArrayList<Integer> infoEntregas, PagoEntity pagoAnterior, DatosEntity datosProveedor){
-        ArrayList<Integer> resultado = new ArrayList<Integer>();
-        resultado.add( (int) calcularVariacion(pagoAnterior.getTotalKlsLeche(), infoEntregas.get(0)) ); // leche
-        resultado.add(calcularDescuentoLeche(infoEntregas.get(2), infoEntregas.get(0), pagoAnterior)); 
-        resultado.add(datosProveedor.getPor_grasa()); // grasa
-        resultado.add(calcularVariacionPorcentaje(pagoAnterior.getPorGrasa(), datosProveedor.getPor_grasa())); 
-        resultado.add(calcularDescuentoGrasa(infoEntregas.get(2), datosProveedor.getPor_grasa(), pagoAnterior)); 
-        resultado.add(datosProveedor.getPor_solidos()); // solidos
-        resultado.add(calcularVariacionPorcentaje(pagoAnterior.getPorSolidos(), datosProveedor.getPor_solidos())); 
-        resultado.add(calcularDescuentoSolidos(infoEntregas.get(2), datosProveedor.getPor_solidos(), pagoAnterior)); 
-        resultado.add(calcularDescuentos(infoEntregas, pagoAnterior, datosProveedor)); // descuentos
-        return resultado;
-    }
-
-    // no hacer prueba unitaria
-    public ArrayList<Integer> variacionesNoPagoAnterior(DatosEntity datosProveedor){
-        ArrayList<Integer> resultado = new ArrayList<Integer>();
-        
-        resultado.add(0);
-        resultado.add(0);
-        resultado.add(datosProveedor.getPor_grasa());
-        resultado.add(0);
-        resultado.add(0);
-        resultado.add(datosProveedor.getPor_solidos());
-        resultado.add(0);
-        resultado.add(0);
-        resultado.add(0);
-        return resultado;
-    }
-
-    // hacer prueba unitaria
-    public int bonoFrecuencia(int turno, int pagoAcopio){
-        double bono = 0;
-        if(turno == 3){
-            bono = 1.20;
-        }
-        else if(turno == 2){
-            bono = 1.12;
-        }
-        else if(turno == 1){
-            bono = 1.08;
-        }
-        return (int)(pagoAcopio * bono);
-    }
-
-    // no hacer prueba unitaria
-    public ArrayList<Integer> calcularAcopioFinal(ArrayList<Integer> infoEntregas, ProveedorEntity proveedor, DatosEntity datosProveedor, int entregas){
-        int pagoAcopio = pagoAcopio(infoEntregas.get(0), proveedor.getCategoria(), datosProveedor.getPor_grasa(), datosProveedor.getPor_solidos());
+    public PagoEntity setAcopio(PagoEntity pago){
+        int pagoAcopio;
         int bono = 0;
-        if(entregas > 10){
-            bono = bonoFrecuencia(infoEntregas.get(1), pagoAcopio) - pagoAcopio;
+        int leche = pago.getTotalKlsLeche();
+        int pagoCategoria = pagoPorCategoria(pago.getCategoria());
+        int pagoGrasa = pagoPorGrasa(pago.getPorGrasa());
+        int pagoSolidos = pagoPorSolidos(pago.getPorSolidos());
+        pagoAcopio = leche*pagoCategoria + leche*pagoGrasa + leche*pagoSolidos;
+
+        if(pago.getFrecuencia() > 10){
+            bono = bonoFrecuencia(pago, pagoAcopio) - pagoAcopio;
         }
-        infoEntregas.add(pagoAcopio+bono);
-        infoEntregas.add(bono);
-        return infoEntregas;
+        pago.setPagoAcopio(pagoAcopio+bono);
+        pago.setBonoFrecuencia(bono);
+        return pago;
     }
 
-    // no hacer prueba unitaria
-    public ArrayList<Integer> calcularPagos(ArrayList<Integer> infoEntregas, ArrayList<Integer> datosVariacion){
-        ArrayList<Integer> pagos = new ArrayList<Integer>();
-        
-        int montoPagoTotal = pagoTotal(infoEntregas.get(2), datosVariacion.get(8));
-        int montoRetencionTotal = retencion(montoPagoTotal);
-        int montoPagoFinal = pagoFinal(montoPagoTotal, montoRetencionTotal);
-
-        //ArrayList <Integer> datosPago = new ArrayList<Integer>();
-        pagos.add(montoPagoTotal);
-        pagos.add(montoRetencionTotal);
-        pagos.add(montoPagoFinal);
-        return pagos;
-    }
-
-    // hacer prueba unitaria
-    int pagoFinal(int pagoTotal, int retencion){
-        int resultado = 0;
-        resultado = pagoTotal - retencion;
-        if(resultado < 0){
-            resultado = 0;
-        }
-        return resultado;
-    }
-
-    // hacer prueba unitaria
-    int pagoTotal(int pagoAcopio, int descuentos){
-        int resultado = 0;
-        resultado = pagoAcopio - descuentos;
-        if(resultado < 0){
-            resultado = 0;
-        }
-        return resultado;
-    }
-
-    // hacer prueba unitaria
-    public int calcularDescuentoLeche(int pagoAcopio, int klsLecheActual, PagoEntity pagoAnterior){
-        double porcentajeLeche = porcentajeVariacionLeche(pagoAnterior.getTotalKlsLeche(), klsLecheActual);
-        return (int)(pagoAcopio * porcentajeLeche);
-    }
-
-    // hacer prueba unitaria
-    public double porcentajeVariacionLeche(int klsLecheAnterior, int klsLecheActual){
-        if(klsLecheAnterior-klsLecheActual <= 0) // variacion positiva o igual a 0
-            return 0;
-        double porcentaje = calcularVariacion(klsLecheAnterior, klsLecheActual);    
-        //double porcentaje = (((double)klsLecheActual - (double)klsLecheAnterior) / (double)klsLecheAnterior) * -100;
-        if(porcentaje >= 0 && porcentaje <= 8){
-            return 0;
-        }else if(porcentaje >= 9 && porcentaje <= 25){
-            return 0.07;
-        }else if(porcentaje >= 26 && porcentaje <= 45){
-            return 0.15;
-        }else if(porcentaje >= 46){
-            return 0.30;
-        }
-        return 0;
-    }
-
-    // hacer prueba unitaria
-    public int calcularDescuentoGrasa(int pagoAcopio, int porGrasa, PagoEntity pagoAnterior){
-        double porcentajeGrasa = porcentajeVariacionGrasa(pagoAnterior.getPorGrasa(), porGrasa);
-        return (int)(pagoAcopio * porcentajeGrasa);
-    }
-
-    // hacer prueba unitaria
-    public double porcentajeVariacionGrasa(int porAnterior, int porActual){
-        int porcentaje = calcularVariacionPorcentaje(porAnterior, porActual);
-        if(porcentaje >= 0 && porcentaje <= 15){
-            return 0;
-        }else if(porcentaje >= 16 && porcentaje <= 25){
-            return 0.12;
-        }else if(porcentaje >= 26 && porcentaje <= 40){
-            return 0.20;
-        }else if(porcentaje >= 41){
-            return 0.30;
-        }
-        return 0;
-    }
-
-    // hacer prueba unitaria
-    public int calcularDescuentoSolidos(int pagoAcopio, int porSolidos, PagoEntity pagoAnterior){
-        double porcentajeSolidos = porcentajeVariacionSolidos(pagoAnterior.getPorSolidos(), porSolidos);
-        return (int) (pagoAcopio * porcentajeSolidos);
-    }
-    
-    // hacer prueba unitaria
-    public double porcentajeVariacionSolidos(int porAnterior, int porActual){
-        int porcentaje = calcularVariacionPorcentaje(porAnterior, porActual);
-        if(porcentaje >= 0 && porcentaje <= 6){
-            return 0;
-        }else if(porcentaje >= 7 && porcentaje <= 12){
-            return 0.18;
-        }else if(porcentaje >= 13 && porcentaje <= 35){
-            return 0.27;
-        }else if(porcentaje >= 36){
-            return 0.45;
-        }
-        return 0;
-    }
-
-    // hacer prueba unitaria
-    public int pagoAcopio(int klsLecheActual, String cat, int porGrasa, int porSolidos){
-        int pagoCat = pagoPorCategoria(cat);
-        int pagoGrasa = pagoPorGrasa(porGrasa);
-        int pagoSolidos = pagoPorSolidos(porSolidos);
-        return ((klsLecheActual * pagoCat) + (klsLecheActual * pagoGrasa) + (klsLecheActual * pagoSolidos));
-    }
-    
     // hacer prueba unitaria
     public int pagoPorCategoria(String categoria){
         int pago = 0;
@@ -335,7 +150,7 @@ public class PagoService {
         }
         return pago;
     }
-
+    
     // hacer prueba unitaria
     public int pagoPorGrasa(int porGrasa){
         int pago = 0;
@@ -370,21 +185,140 @@ public class PagoService {
     }
 
     // hacer prueba unitaria
-    public int retencion(int pagoTotal){
-        int retencion = 0;
-        if(pagoTotal > 950000)
-            retencion = (int) (pagoTotal * 0.13);
-        return retencion;
+    public int bonoFrecuencia(PagoEntity pago, int pagoAcopio){
+        double bono = 0;
+        int turno = pago.getQueTurnos();
+        if(turno == 3){
+            bono = 1.20;
+        }
+        else if(turno == 2){
+            bono = 1.12;
+        }
+        else if(turno == 1){
+            bono = 1.08;
+        }
+        return (int)(pagoAcopio * bono);
+    }
+
+    // no hacer prueba unitaria
+    public PagoEntity setDescuentos(PagoEntity pago, PagoEntity pagoAnterior){
+        if(pagoAnterior.getComparado() == 0){
+            pago.setDctoVariacionLeche(calcularDescuentoPorLeche(pago));
+            pago.setDctoVariacionGrasa(calcularDescuentoPorGrasa(pago));
+            pago.setDctoVariacionSolidos(calcularDescuentoPorSolidos(pago));
+        }else if(pagoAnterior.getComparado() == -1){
+            pago.setDctoVariacionLeche(0);
+            pago.setDctoVariacionGrasa(0);
+            pago.setDctoVariacionSolidos(0);
+        }
+            
+        return pago;
+    }
+
+    // no hacer prueba unitaria
+    public PagoEntity setPagos(PagoEntity pago){
+        pago.setPagoTotal(pagoTotal(pago));
+        if(pago.getPagoTotal() > 950000)
+            pago.setMontoRetencion(montoRetencion(pago));
+        else
+            pago.setMontoRetencion(0);
+        pago.setPagoFinal(pagoFinal(pago));
+        return pago;
+    }
+
+    // hacer prueba unitaria    
+    public int pagoTotal(PagoEntity pago){
+        int resultado = pago.getPagoAcopio() - pago.getDctoVariacionLeche() - pago.getDctoVariacionGrasa() - pago.getDctoVariacionSolidos();
+        if(resultado < 0)
+            resultado = 0;
+        return resultado;
+    }
+
+    // hacer prueba unitaria    
+    public int montoRetencion(PagoEntity pago){
+        return (int) (pago.getPagoTotal() * 0.13);
     }
 
     // hacer prueba unitaria
-    public int calculoRetencion(int valor){
-        if(valor > 950000){
-            return (int) (valor * 0.13);
-        }
-        else{
+    public int pagoFinal(PagoEntity pago){
+        int resultado = pago.getPagoTotal() - pago.getMontoRetencion();
+        if(resultado < 0)
+            resultado = 0;
+        return resultado;
+    }
+
+    // hacer prueba unitaria
+    public int calcularDescuentoPorLeche(PagoEntity pago){
+        float porcentajeVariacionLeche = pago.getPorVariacionLeche();
+        double porcentajeDescuento = descuentoPorLeche(porcentajeVariacionLeche);
+        return (int) (pago.getPagoAcopio() * porcentajeDescuento);
+    }
+
+    // hacer prueba unitaria
+    public int calcularDescuentoPorGrasa(PagoEntity pago){
+        float porcentajeVariacionGrasa = pago.getPorVariacionGrasa();
+        double porcentajeDescuento = descuentoPorGrasa(porcentajeVariacionGrasa);
+        return (int) (pago.getPagoAcopio() * porcentajeDescuento);
+    }
+
+    // hacer prueba unitaria
+    public int calcularDescuentoPorSolidos(PagoEntity pago){
+        float porcentajeVariacionSolidos = pago.getPorVariacionSolidos();
+        double porcentajeDescuento = descuentoPorSolidos(porcentajeVariacionSolidos);
+        return (int) (pago.getPagoAcopio() * porcentajeDescuento);
+    }
+
+    // hacer prueba unitaria
+    public double descuentoPorLeche(float porcentaje){
+        if(porcentaje >= 0 && porcentaje <= 8){
             return 0;
+        }else if(porcentaje >= 9 && porcentaje <= 25){
+            return 0.07;
+        }else if(porcentaje >= 26 && porcentaje <= 45){
+            return 0.15;
+        }else if(porcentaje >= 46){
+            return 0.30;
         }
+        return 0;
+    }
+
+    // hacer prueba unitaria
+    public double descuentoPorGrasa(float porcentaje){
+        if(porcentaje >= 0 && porcentaje <= 15){
+            return 0;
+        }else if(porcentaje >= 16 && porcentaje <= 25){
+            return 0.12;
+        }else if(porcentaje >= 26 && porcentaje <= 40){
+            return 0.20;
+        }else if(porcentaje >= 41){
+            return 0.30;
+        }
+        return 0;
+    }
+
+    // hacer prueba unitaria
+    public double descuentoPorSolidos(float porcentaje){
+        if(porcentaje >= 0 && porcentaje <= 6){
+            return 0;
+        }else if(porcentaje >= 7 && porcentaje <= 12){
+            return 0.18;
+        }else if(porcentaje >= 13 && porcentaje <= 35){
+            return 0.27;
+        }else if(porcentaje >= 36){
+            return 0.45;
+        }
+        return 0;
+    }
+
+    // hacer prueba unitaria
+    public float calcularVariacionLeche(int datoAnterior, int datoActual){
+        float porcentaje = (((float)datoActual - (float)datoAnterior) / (float)datoAnterior) * -100;
+        return porcentaje;
+    }
+
+    // hacer prueba unitaria
+    public int calcularVariacionPorcentaje(int porAnterior, int porActual){
+        return porAnterior - porActual;
     }
 
     // no hacer prueba unitaria
@@ -394,43 +328,10 @@ public class PagoService {
 
     // no hacer prueba unitaria
     public void actualizarPago(PagoEntity pago){
+        if(pago.getComparado() == 0){
+            pago.setComparado(-1);
+            actualizarPago(pago);
+        }
         pagoRepository.save(pago);
-    }
-
-    // no hacer prueba unitaria
-    public PagoEntity setInfoProveedor(PagoEntity pago, ArrayList<String> datosProveedor){
-        pago.setCodigo(datosProveedor.get(0));
-        pago.setNombre(datosProveedor.get(1));
-        return pago;
-    }
-
-    // no hacer prueba unitaria
-    public PagoEntity setInfoLeche(PagoEntity pago, ArrayList<Integer> datosLeche){
-        pago.setTotalKlsLeche(datosLeche.get(0));
-        pago.setFrecuencia(datosLeche.get(1));
-        pago.setPromedioDiarioKls(datosLeche.get(2));
-        pago.setBonoFrecuencia(datosLeche.get(3));
-        return pago;
-    }
-
-    // no hacer prueba unitaria
-    public PagoEntity setInfoVariacion(PagoEntity pago, ArrayList<Integer> datosVariacion){
-        pago.setPorVariacionLeche(datosVariacion.get(0));
-        pago.setDctoVariacionLeche(datosVariacion.get(1));
-        pago.setPorGrasa(datosVariacion.get(2));
-        pago.setPorVariacionGrasa(datosVariacion.get(3));
-        pago.setDctoVariacionGrasa(datosVariacion.get(4));
-        pago.setPorSolidos(datosVariacion.get(5));
-        pago.setPorVariacionSolidos(datosVariacion.get(6));
-        pago.setDctoVariacionSolidos(datosVariacion.get(7));
-        return pago;
-    }
-
-    // no hacer prueba unitaria
-    public PagoEntity setInfoPagos(PagoEntity pago, ArrayList<Integer> datosPago){
-        pago.setPagoTotal(datosPago.get(0));
-        pago.setMontoRetencion(datosPago.get(1));
-        pago.setPagoFinal(datosPago.get(2));
-        return pago;
     }
 }

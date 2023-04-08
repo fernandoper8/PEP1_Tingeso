@@ -20,31 +20,34 @@ public class PagoEntity {
     private int idPago;
 
     // Datos proveedor
-    private String nombre; 
-    private String codigo;        
+    private String nombre; //
+    private String codigo; //
+    private String categoria; //
        
     // Datos relacionados a leche
-    private int totalKlsLeche;    
-    private float promedioDiarioKls;     
-    private int frecuencia;             
-    private int bonoFrecuencia;        
+    private int totalKlsLeche; //
+    private float promedioDiarioKls; //  
+    private int frecuencia; //     
+    private int queTurnos; //       
 
     // Porcentajes de variacion
-    private int porVariacionLeche;    
-    private int dctoVariacionLeche;   
-    private int porGrasa;              
-    private int porVariacionGrasa;    
-    private int dctoVariacionGrasa;   
-    private int porSolidos;            
-    private int porVariacionSolidos;  
-    private int dctoVariacionSolidos; 
+    private float porVariacionLeche; //   
+    private int dctoVariacionLeche; //  
+    private int porGrasa; //             
+    private int porVariacionGrasa; //   
+    private int dctoVariacionGrasa; //
+    private int porSolidos; //           
+    private int porVariacionSolidos; // 
+    private int dctoVariacionSolidos; //
 
     // Datos respecto a pagos
-    private int pagoTotal;             
-    private int montoRetencion;        
-    private int pagoFinal;             
+    private int pagoAcopio; //
+    private int pagoTotal;               
+    private int pagoFinal;
+    private int montoRetencion;           
+    private int bonoFrecuencia; //        
 
     // Es el ultimo pago del proveedor?
-    private int comparado;
-    private Date fecha;
+    private int comparado; //
+    private Date fecha; //
 }

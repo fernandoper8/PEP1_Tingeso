@@ -25,7 +25,7 @@ public class AcopioService {
         return (ArrayList<AcopioEntity>) acopioRepository.findAll();
     }
 
-    public void eliminarDatos(){
+    public void eliminarAcopios(){
         acopioRepository.deleteAll();
     }
 
