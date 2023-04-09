@@ -2,10 +2,13 @@ package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
 import com.milkstgo.milkStgo.repositories.ProveedorRepository;
+import lombok.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+
+
 
 @Service
 public class ProveedorService {
@@ -13,7 +16,6 @@ public class ProveedorService {
     @Autowired
     ProveedorRepository proveedorRepository;
 
-    // no hacer prueba unitaria
     public void guardarProveedor(String nombre, String codigo, String retencion, String categoria){
         ProveedorEntity proveedor = new ProveedorEntity();
         proveedor.setNombre(nombre);
@@ -24,9 +26,8 @@ public class ProveedorService {
         proveedorRepository.save(proveedor);
     }
 
-    // no hacer prueba unitaria
     public ArrayList<ProveedorEntity> obtenerProveedores(){
         return (ArrayList<ProveedorEntity>) proveedorRepository.findAll();
     }
 
-}
+}                        
