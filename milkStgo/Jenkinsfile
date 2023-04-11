@@ -1,0 +1,57 @@
+pipeline{
+    agent any
+    tools{
+        maven "maven"
+    }
+    stages{
+        stage("Build JAR File"){
+            steps{
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'jenkins', url: 'https://github.com/fernandoper8/PEP1_Tingeso']])
+                dir("milkStgo"){
+                    sh "mvn clean install"
+                }
+            }
+        }
+        stage("Test"){
+            steps{
+                dir("milkStgo"){
+                    sh "mvn test"
+                }
+            }
+        }
+        stage("SonarQube Analysis"){
+            steps{
+                dir("milkStgo"){
+                    sh "mvn sonar:sonar -Dsonar.projectKey=tingeso_pep1 -Dsonar.projectName='tingeso_pep1' -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqp_a0cbb84b70efb8085ab4c9862a84d30f249cb84d"
+                }
+            }
+        }
+        stage("Build Docker Image"){
+            steps{
+                dir("milkStgo"){
+                    sh "docker build -t fernandoper501/proyecto_1 ."
+                }
+            }
+        }
+        stage("Push Docker Image"){
+            steps{
+                dir("milkStgo"){
+                    withCredentials([string(credentialsId: 'dckrhubpassword', variable: 'dckpass')]){
+                        sh "docker login -u fernandoper501 -p ${dckpass}"
+                        
+                    }
+                    sh "docker push fernandoper501/proyecto_1"
+                    
+                }
+                
+            }
+        }
+    }
+    post{
+        always{
+            dir("milkStgo"){
+                sh "docker logout"
+            }
+        }
+    }
+}
