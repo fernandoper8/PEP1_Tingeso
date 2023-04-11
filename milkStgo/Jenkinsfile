@@ -6,7 +6,7 @@ pipeline{
     stages{
         stage("Build JAR File"){
             steps{
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'jenkins', url: 'https://github.com/fernandoper8/PEP1_Tingeso']])
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'Token', url: 'https://github.com/fernandoper8/PEP1_Tingeso']])
                 dir("milkStgo"){
                     sh "mvn clean install"
                 }
@@ -41,7 +41,6 @@ pipeline{
                         
                     }
                     sh "docker push fernandoper501/proyecto_1"
-                    
                 }
                 
             }
