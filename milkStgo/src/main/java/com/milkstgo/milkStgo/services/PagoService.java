@@ -99,7 +99,7 @@ public class PagoService {
         pago.setQueTurnos(turno);
         pago.setFrecuencia(acopiosProveedor.size());
         if(acopiosProveedor.size() > 0)
-            pago.setPromedioDiarioKls(totalLeche/acopiosProveedor.size());
+            pago.setPromedioDiarioKls((float)totalLeche/acopiosProveedor.size());
         else
             pago.setPromedioDiarioKls(0);
         return pago;
