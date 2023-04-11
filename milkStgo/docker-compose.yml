@@ -1,5 +1,16 @@
 version: "3.8"
 services:
+  nginx:
+      image: nginx:latest
+      container_name: nginx-proxy
+      restart: always
+      ports:
+        - "80:80"
+      volumes:
+        - ./nginx/conf.d:/etc/nginx/conf.d
+      depends_on:
+        - app1
+
   postgres-db:
     image: postgres:latest
     restart: always
@@ -12,11 +23,11 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
 
-  app:
+  app1:
     container_name: proyecto_1
     image: fernandoper501/proyecto_1
     ports:
-      - "8090:8090"
+      - "8091:8090"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/PEP1_Tingeso
       - SPRING_DATASOURCE_USERNAME=postgres
