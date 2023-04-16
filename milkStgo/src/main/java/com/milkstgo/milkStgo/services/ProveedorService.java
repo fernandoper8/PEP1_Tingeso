@@ -2,7 +2,6 @@ package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
 import com.milkstgo.milkStgo.repositories.ProveedorRepository;
-import lombok.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

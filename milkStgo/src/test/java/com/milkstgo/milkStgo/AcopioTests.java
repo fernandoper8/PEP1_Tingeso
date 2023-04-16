@@ -13,7 +13,7 @@ import com.milkstgo.milkStgo.services.AcopioService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class AcopioTests {
+class AcopioTests {
     
     @Autowired
     AcopioRepository acopioRepository;

@@ -4,7 +4,6 @@ import com.milkstgo.milkStgo.entities.AcopioEntity;
 import com.milkstgo.milkStgo.entities.DatosEntity;
 import com.milkstgo.milkStgo.entities.PagoEntity;
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
-import com.milkstgo.milkStgo.repositories.AcopioRepository;
 import com.milkstgo.milkStgo.repositories.PagoRepository;
 import lombok.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +101,7 @@ public class PagoService {
         pago.setTotalKlsLeche(totalLeche);
         pago.setQueTurnos(turno);
         pago.setFrecuencia(acopiosProveedor.size());
-        if(acopiosProveedor.size() > 0)
+        if(!acopiosProveedor.isEmpty())
             pago.setPromedioDiarioKls((float)totalLeche/acopiosProveedor.size());
         else
             pago.setPromedioDiarioKls(0);
@@ -153,6 +152,8 @@ public class PagoService {
                 break;
             case "D":
                 pago = 250;
+                break;
+            default:
                 break;
         }
         return pago;
@@ -304,9 +305,7 @@ public class PagoService {
     }
 
     public float calcularVariacionLeche(int datoAnterior, int datoActual){
-        float porcentaje = (((float)datoActual - (float)datoAnterior) / (float)datoAnterior) * -100;
-
-        return porcentaje;
+        return (((float)datoActual - (float)datoAnterior) / datoAnterior) * -100;
     }
 
     public int calcularVariacionPorcentaje(int porAnterior, int porActual){
