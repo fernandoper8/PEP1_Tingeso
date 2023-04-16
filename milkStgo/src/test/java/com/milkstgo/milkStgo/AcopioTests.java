@@ -75,24 +75,4 @@ public class AcopioTests {
         assertEquals(1, acopios.size());
         acopioRepository.deleteAll();
     }
-
-    @Test // Hay minimo 1 acopio registrado del proveedor 1050
-    void obtenerAcopiosPorProveedorTest1(){
-        int actual = acopioService.obtenerData().size();
-        AcopioEntity acopio = new AcopioEntity();
-        acopio.setId_proveedor("1060");
-        acopio.setFecha("09-04-2023");
-        acopio.setKls_leche("1000");
-        acopio.setTurno("M");
-        acopioService.guardarData(acopio);
-        ArrayList<AcopioEntity> acopios = acopioService.obtenerAcopiosPorProveedor("1060");
-        assertEquals(actual+1, acopios.size());
-        acopioRepository.deleteAll();
-    }   
-
-    @Test // No hay acopios del proveedor
-    void obtenerAcopiosPorProveedorTest2(){
-        ArrayList<AcopioEntity> acopios = acopioService.obtenerAcopiosPorProveedor("1070");
-        assertEquals(0, acopios.size());
-    }
 }

@@ -53,6 +53,10 @@ public class AcopioService {
         }
     }
 
+    public ArrayList<AcopioEntity> obtenerAcopiosPorProveedor(String proveedor){
+        return acopioRepository.obtenerAcopiosPorProveedor(proveedor);
+    }
+
     @Generated
     public void leerCsv(String direccion){
         String texto = "";
@@ -102,17 +106,5 @@ public class AcopioService {
         guardarData(newData);
 
     }
-
-    public ArrayList<AcopioEntity> obtenerAcopiosPorProveedor(String proveedor){
-        ArrayList<AcopioEntity> acopios = obtenerData();
-        ArrayList<AcopioEntity> acopiosProveedor = new ArrayList<AcopioEntity>();
-        for(AcopioEntity acopio : acopios){
-            if(acopio.getId_proveedor().equals(proveedor)){
-                acopiosProveedor.add(acopio);
-            }
-        }
-        return acopiosProveedor;
-    }
-
 
 }

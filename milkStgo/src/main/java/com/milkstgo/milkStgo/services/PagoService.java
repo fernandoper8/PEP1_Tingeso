@@ -4,6 +4,7 @@ import com.milkstgo.milkStgo.entities.AcopioEntity;
 import com.milkstgo.milkStgo.entities.DatosEntity;
 import com.milkstgo.milkStgo.entities.PagoEntity;
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
+import com.milkstgo.milkStgo.repositories.AcopioRepository;
 import com.milkstgo.milkStgo.repositories.PagoRepository;
 import lombok.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ public class PagoService {
 
     @Autowired
     PagoRepository pagoRepository;
+
 
     @Autowired
     ProveedorService proveedorService;
@@ -52,23 +54,25 @@ public class PagoService {
         ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
         for(ProveedorEntity proveedor : proveedores){
             ArrayList<AcopioEntity> acopiosProveedor = acopioService.obtenerAcopiosPorProveedor(proveedor.getCodigo());
-            DatosEntity datosProveedor = datosService.obtenerDataPorProveedor(proveedor.getCodigo());
-            PagoEntity pagoAnterior = obtenerPagosPorProveedor(proveedor.getCodigo());
-            nuevoPago = new PagoEntity();
-            nuevoPago.setNombre(proveedor.getNombre());
-            nuevoPago.setCodigo(proveedor.getCodigo());
-            nuevoPago.setCategoria(proveedor.getCategoria());
-            nuevoPago.setComparado(0);
-            nuevoPago.setFecha(new Date());
-            nuevoPago = setInfoPorEntrega(acopiosProveedor, nuevoPago);
-            nuevoPago.setPorGrasa(datosProveedor.getPor_grasa());
-            nuevoPago.setPorSolidos(datosProveedor.getPor_solidos());
-            nuevoPago = setVariaciones(nuevoPago, pagoAnterior);
-            nuevoPago = setAcopio(nuevoPago);
-            nuevoPago = setDescuentos(nuevoPago, pagoAnterior);
-            nuevoPago = setPagos(nuevoPago); 
-            guardarPago(nuevoPago);
-            actualizarPago(pagoAnterior);
+            if(!acopiosProveedor.isEmpty()) {
+                DatosEntity datosProveedor = datosService.obtenerDataPorProveedor(proveedor.getCodigo());
+                PagoEntity pagoAnterior = obtenerPagosPorProveedor(proveedor.getCodigo());
+                nuevoPago = new PagoEntity();
+                nuevoPago.setNombre(proveedor.getNombre());
+                nuevoPago.setCodigo(proveedor.getCodigo());
+                nuevoPago.setCategoria(proveedor.getCategoria());
+                nuevoPago.setComparado(0);
+                nuevoPago.setFecha(new Date());
+                nuevoPago = setInfoPorEntrega(acopiosProveedor, nuevoPago);
+                nuevoPago.setPorGrasa(datosProveedor.getPor_grasa());
+                nuevoPago.setPorSolidos(datosProveedor.getPor_solidos());
+                nuevoPago = setVariaciones(nuevoPago, pagoAnterior);
+                nuevoPago = setAcopio(nuevoPago);
+                nuevoPago = setDescuentos(nuevoPago, pagoAnterior);
+                nuevoPago = setPagos(nuevoPago);
+                guardarPago(nuevoPago);
+                actualizarPago(pagoAnterior);
+            }
         }
         acopioService.eliminarAcopios();
         datosService.eliminarDatos();
