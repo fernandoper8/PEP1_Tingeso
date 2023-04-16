@@ -36,6 +36,25 @@ public class AcopioTests {
     }
 
     @Test
+    void obtenerAcopiosPorProveedorTest1(){
+        //acopioRepository.deleteAll();
+        int actual = acopioService.obtenerData().size();
+        AcopioEntity acopio = new AcopioEntity();
+        acopio.setId_proveedor("1000");
+        acopio.setFecha("09-04-2023");
+        acopio.setKls_leche("1000");
+        acopio.setTurno("M");
+        acopioRepository.save(acopio);
+
+        ArrayList<AcopioEntity> acopios = acopioService.obtenerAcopiosPorProveedor("1000");
+        ArrayList<AcopioEntity> acopios2 = acopioService.obtenerAcopiosPorProveedor("1001");
+
+        assertEquals(actual+1, acopios.size());
+        assertEquals(0, acopios2.size());
+        acopioRepository.deleteAll();
+    }
+
+    @Test
     void eliminarAcopiosTest1(){
         acopioRepository.deleteAll();
         AcopioEntity acopio = new AcopioEntity();
