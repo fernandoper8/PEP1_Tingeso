@@ -25,18 +25,12 @@ public class AcopioController {
         return "addAcopio";
     }
 
+
     @PostMapping("/addAcopio")
     public String addAcopio(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes){
         acopioService.guardar(file);
         redirectAttributes.addFlashAttribute("mensaje", "Acopio guardado correctamente");
         acopioService.leerCsv("Acopio.csv");
-        return "redirect:/addAcopio";
-    }
-
-    @GetMapping("/viewAcopio")
-    public String viewAcopio(Model model){
-        ArrayList<AcopioEntity> acopios = acopioService.obtenerData();
-        model.addAttribute("acopios", acopios);
-        return "viewAcopio";
+        return "redirect:/archivos";
     }
 }

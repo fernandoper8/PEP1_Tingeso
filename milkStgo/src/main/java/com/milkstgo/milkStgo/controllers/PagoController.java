@@ -18,19 +18,16 @@ public class PagoController {
     @Autowired
     PagoService pagoService;
 
-    @GetMapping("/crearPlanilla")
-    public String main(){ return "crearPlanilla"; }
-
     @PostMapping("/crearPlanilla")
     public String calcularPlanilla(){
         pagoService.crearPlanilla();
-        return "redirect:/viewPlanilla";
+        return "redirect:/";
     }
 
-    @GetMapping("/viewPlanilla")
+    @GetMapping("/planilla")
     public String verPlanilla(Model model){
         ArrayList<PagoEntity> pagos = pagoService.obtenerPagos();
         model.addAttribute("pagos", pagos);
-        return "viewPlanilla";
+        return "planilla";
     }
 }

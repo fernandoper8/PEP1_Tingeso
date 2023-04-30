@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>milkStgo</title>
+    <!-- Importacion bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css">
+    
+    <!-- Importacion archivo css -->
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" th:href="@{/css/style.css}">
+    
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+
+    <div class="container my-5">
+        <div class="card px-3 py-3">
+            <h3 class="text-center">Planilla de Pagos</h3>
+
+            <th:block th:if="${not pagos.isEmpty()}">
+                </br>
+                <div class="container">
+                    <tr th:each="pago : ${pagos}">
+                        <div class="card cardPagoExterna border-black">
+                            <div class="card-body">
+                                <h5>Pago número <b th:text="${pago.idPago}"></b></h5>
+                                <h5>Fecha del pago: <b th:text="${#dates.format(pago.fecha, 'dd-MM-yyyy')}"></b> </br></h5>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="card cardPagoInterna h-100 border-black">
+                                            <div class="card-body">
+                                                Proveedor : <b th:text="${pago.nombre}"></b> </br>
+                                                Codigo : <b th:text="${pago.codigo}"></b> </br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col">
+                                        <div class="card cardPagoInterna h-100 border-black">
+                                            <div class="card-body">
+                                                Kilos de Leche totales : <b th:text="${pago.totalKlsLeche}"></b> </br>
+                                                Frecuencia de entrega : <b th:text="${pago.frecuencia}"></b> </br>
+                                                Promedio diario de kilos : <b th:text="${pago.promedioDiarioKls}"></b> </br>
+                                                Bonificacion por frecuencia : <b>$</b><b th:text="${pago.bonoFrecuencia}"></b> </br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </br>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="card cardPagoInterna h-100 border-black">
+                                            <div class="card-body">
+                                                Porcentaje de variacion negativa de leche : <b th:text="${pago.porVariacionLeche}"></b><b>%</b> </br>
+                                                Descuento por variacion negativa de leche: <b>$</b><b th:text="${pago.dctoVariacionLeche}"></b> </br>
+                                                Porcentaje de grasa : <b th:text="${pago.porGrasa}"></b><b>%</b></br>
+                                                Descuento por variacion negativa de grasa : <b>$</b><b th:text="${pago.dctoVariacionGrasa}"></b> </br>
+                                                Porcentaje de solidos totales : <b th:text="${pago.porSolidos}"></b><b>%</b></br>
+                                                Descuento por variacion negativa de solidos totales : <b>$</b><b th:text="${pago.dctoVariacionSolidos}"></b> </br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col">
+                                        <div class="card cardPagoInterna h-100 border-black">
+                                            <div class="card-body">
+                                                Monto Retenido : <b>$</b><b th:text="${pago.montoRetencion}"></b> </br>
+                                                Pago Total : <b>$</b><b th:text="${pago.pagoTotal}"></b> </br>
+                                                Pago Final : <b>$</b><b th:text="${pago.pagoFinal}"></b> </br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </br>  
+                    </tr>
+                </div>
+                </br>
+            </th:block>
+    
+        </div>
+    </div>
+    
+</body>
+</html>

@@ -20,8 +20,13 @@ public class ProveedorController {
 
     @Autowired
     private ProveedorService proveedorService;
-    @GetMapping("/addProveedor")
-    public String addProveedor(){return "addProveedor";}
+
+    @GetMapping("/proveedores")
+    public String proveedor(Model model){
+        ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
+        model.addAttribute("proveedores", proveedores);
+        return "proveedores";
+    }
 
     @PostMapping("/addProveedor")
     public String nuevoProveedor(@RequestParam("nombre") String nombre,
@@ -31,14 +36,6 @@ public class ProveedorController {
                                     RedirectAttributes redirectAttributes){
         proveedorService.guardarProveedor(nombre,codigo,retencion,categoria);
         redirectAttributes.addFlashAttribute("mensaje", "Proveedor registrado correctamente");
-        return "redirect:/addProveedor";
+        return "redirect:/proveedores";
     }
-
-    @GetMapping("/viewProveedor")
-    public String viewProveedor(Model model){
-        ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
-        model.addAttribute("proveedores", proveedores);
-        return "viewProveedor";
-    }
-
 }

@@ -15,4 +15,5 @@ public interface AcopioRepository extends JpaRepository<AcopioEntity, String> {
     @Query("select a from AcopioEntity a where a.id_proveedor = :proveedor")
     ArrayList<AcopioEntity> obtenerAcopiosPorProveedor(@Param("proveedor") String proveedor);
 
+
 }

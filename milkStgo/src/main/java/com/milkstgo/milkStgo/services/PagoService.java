@@ -4,6 +4,7 @@ import com.milkstgo.milkStgo.entities.AcopioEntity;
 import com.milkstgo.milkStgo.entities.DatosEntity;
 import com.milkstgo.milkStgo.entities.PagoEntity;
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
+import com.milkstgo.milkStgo.repositories.AcopioRepository;
 import com.milkstgo.milkStgo.repositories.PagoRepository;
 import lombok.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class PagoService {
 
     @Autowired
     PagoRepository pagoRepository;
-
-
+    @Autowired
+    AcopioRepository acopioRepository;
     @Autowired
     ProveedorService proveedorService;
     @Autowired
@@ -101,9 +102,10 @@ public class PagoService {
         pago.setTotalKlsLeche(totalLeche);
         pago.setQueTurnos(turno);
         pago.setFrecuencia(acopiosProveedor.size());
-        if(!acopiosProveedor.isEmpty())
-            pago.setPromedioDiarioKls((float)totalLeche/acopiosProveedor.size());
-        else
+        if(!acopiosProveedor.isEmpty()) {
+            //System.out.println("Cantidad de dias donde se realizan entregas: " + acopioRepository.obtenerDiasEntregas(pago.getCodigo()));
+            pago.setPromedioDiarioKls((float) totalLeche / acopiosProveedor.size());
+        }else
             pago.setPromedioDiarioKls(0);
         return pago;
     }

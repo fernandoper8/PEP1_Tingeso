@@ -30,13 +30,6 @@ public class DatosController {
         datosService.guardar(file);
         redirectAttributes.addFlashAttribute("mensaje", "Datos guardados correctamente");
         datosService.leerCsv("Datos.csv");
-        return "redirect:/addDatos";
-    }
-
-    @GetMapping("/viewDatos")
-    public String viewDatos(Model model){
-        ArrayList<DatosEntity> datos = datosService.obtenerData();
-        model.addAttribute("datos", datos);
-        return "viewDatos";
+        return "redirect:/archivos";
     }
 }

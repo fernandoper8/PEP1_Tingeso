@@ -1,0 +1,54 @@
+body{
+    background-image: linear-gradient(to right top, #85f1fb, #47f6e5, #3af8b7, #6ef477, #a8eb12);
+    background-attachment: fixed;
+}
+
+.principal{
+    color: white;
+}
+
+/* Para los botones */
+.btn{
+    background-color: #38B714;
+    color: white;
+    border-color: #38B714;
+    border-radius: 2em;
+}
+
+.btn:hover{
+    background-color: #2d8c10;
+    color: white;
+    border-color: #38B714;
+    transform: translateY(-5px);
+}
+
+.btn:active{
+    background-color: #1d5f0b;
+    transition: background-color 0.25s;
+}
+
+/* Para cards */
+.card{
+    text-align: center;
+    border-radius: 2em;
+    box-shadow: 0 5px 15px rgba(0,0,0,.4);
+}
+
+.card-header{
+    background-color: transparent;
+}
+
+/* card dentro de pago.html */
+.cardPagoExterna{
+    text-align: left;
+    border-radius: 2em;
+    box-shadow: 0 5px 15px rgba(0,0,0,.4);
+}
+
+.cardPagoInterna{
+    text-align: left;
+    border-radius: 2em;
+    box-shadow: 0 5px 15px rgba(0,0,0,.1);
+    background-color: #ecf3ea; 
+    color: black;
+}

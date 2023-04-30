@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>milkStgo</title>
+    <!-- Importacion bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css">
+    
+    <!-- Importacion archivo css -->
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" th:href="@{/css/style.css}">
+    
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    
+     <!--VER SI QUITAR CONTAINER O NO, DEPENDIENDO DE COMO SE VEA AL FINAL-->
+     <div class="container my-5">
+
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4><b>Ingreso de Acopio</b></h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/addAcopio}" method="POST" enctype="multipart/form-data" >
+                            <input class="form-control form-control-lg me-3" name="file" type="file" accept=".csv">
+                            <button class="btn btn-info mt-3 letra" type="submit"><b>Agregar Acopio</b></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4><b>Ingreso de Datos</b></h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/addDatos}" method="POST" enctype="multipart/form-data" >
+                            <input class="form-control form-control-lg me-3" name="file" type="file" accept=".csv">
+                            <button class="btn btn-info mt-3 letra" type="submit"><b>Agregar Datos</b></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center my-4">
+            <div class="col-6">
+                <th:block th:if="${not acopios.isEmpty()}">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><b>Acopios existentes</b></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="container">
+                                <div class="container">
+                                    <table class="table">
+                                      <thead>
+                                      <tr class="text-center">
+                                        <th scope="col">Nro Acopio</th>
+                                        <th scope="col">Codigo Proveedor</th>
+                                        <th scope="col">Kls de Leche</th>
+                                        <th scope="col">Turno</th>
+                                        <th scope="col">Fecha</th>
+                                      </tr>
+                                      </thead>
+                                      <tbody>
+                                      <tr scope="row" class="text-center" th:each="acopio : ${acopios}">
+                                        <td th:text="${acopio.id_acopio}"></td>
+                                        <td th:text="${acopio.getId_proveedor}"></td>
+                                        <td th:text="${acopio.kls_leche}"></td>
+                                        <td th:text="${acopio.turno == 'M' ? 'Mañana' : acopio.turno == 'T' ? 'Tarde' : 'F'}"></td>
+                                        <td th:text="${acopio.fecha}"></td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+            <div class="col-6">
+                <th:block th:if="${not datos.isEmpty()}">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><b>Datos existentes</b></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="container">
+                                <table class="table">
+                                    <thead>
+                                    <tr class="text-center">
+                                        <th scope="col">Nro Datos</th>
+                                        <th scope="col">Codigo Proveedor</th>
+                                        <th scope="col">Porcentaje de Grasa</th>
+                                        <th scope="col">Porcentaje de Solidos</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr scope="row" class="text-center" th:each="dato : ${datos}">
+                                        <td th:text="${dato.id_datos}"></td>
+                                        <td th:text="${dato.id_proveedor}"></td>
+                                        <td th:text="${dato.por_grasa}"></td>
+                                        <td th:text="${dato.por_solidos}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+
+        </div>
+
+    <!--VER SI QUITAR CONTAINER O NO, DEPENDIENDO DE COMO SE VEA AL FINAL-->
+    </div>
+
+</body>
+</html>
