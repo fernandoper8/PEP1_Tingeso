@@ -7,6 +7,7 @@
     
     <!-- Importacion archivo css -->
     <link rel="stylesheet" type="text/css" href="../static/css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" href="../static/css/navbar.css" th:href="@{/css/navbar.css}">
     
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,9 +15,34 @@
 </head>
 <body>
     
-     <!--VER SI QUITAR CONTAINER O NO, DEPENDIENDO DE COMO SE VEA AL FINAL-->
-     <div class="container my-5">
+    <nav class="navbar navbar-expand-lg bs-side-navbar">
+        <a class="navbar-brand" href="/"><b>milkStgo</b></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link item" href="/">Menú Principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link item" href="/proveedores">Proveedores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link item" href="/archivos">Subir Archivos</a>
+                </li>
+                <th:block th:if="${!pagos.isEmpty()}">
+                    <li class="nav-item">
+                        <a class="nav-link item" href="/planilla">Ver Pagos</a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </nav>
 
+     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-6">
                 <div class="card">
@@ -26,7 +52,7 @@
                     <div class="card-body">
                         <form th:action="@{/addAcopio}" method="POST" enctype="multipart/form-data" >
                             <input class="form-control form-control-lg me-3" name="file" type="file" accept=".csv">
-                            <button class="btn btn-info mt-3 letra" type="submit"><b>Agregar Acopio</b></button>
+                            <button class="btn mt-3 letra" type="submit"><b>Agregar Acopio</b></button>
                         </form>
                     </div>
                 </div>
@@ -39,7 +65,7 @@
                     <div class="card-body">
                         <form th:action="@{/addDatos}" method="POST" enctype="multipart/form-data" >
                             <input class="form-control form-control-lg me-3" name="file" type="file" accept=".csv">
-                            <button class="btn btn-info mt-3 letra" type="submit"><b>Agregar Datos</b></button>
+                            <button class="btn mt-3 letra" type="submit"><b>Agregar Datos</b></button>
                         </form>
                     </div>
                 </div>
@@ -113,10 +139,7 @@
                     </div>
                 </th:block>
             </div>
-
         </div>
-
-    <!--VER SI QUITAR CONTAINER O NO, DEPENDIENDO DE COMO SE VEA AL FINAL-->
     </div>
 
 </body>

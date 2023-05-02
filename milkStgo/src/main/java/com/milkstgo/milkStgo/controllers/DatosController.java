@@ -20,11 +20,6 @@ public class DatosController {
 
     @Autowired
     DatosService datosService;
-    @GetMapping("/addDatos")
-    public String main(){
-        return("addDatos");
-    }
-
     @PostMapping("/addDatos")
     public String addAcopio(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes){
         datosService.guardar(file);

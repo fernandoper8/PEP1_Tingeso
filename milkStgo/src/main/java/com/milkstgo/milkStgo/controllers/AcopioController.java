@@ -20,12 +20,6 @@ public class AcopioController {
     @Autowired
     AcopioService acopioService;
 
-    @GetMapping("/addAcopio")
-    public String main(){
-        return "addAcopio";
-    }
-
-
     @PostMapping("/addAcopio")
     public String addAcopio(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes){
         acopioService.guardar(file);

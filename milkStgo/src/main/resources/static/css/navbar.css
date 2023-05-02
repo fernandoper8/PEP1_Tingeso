@@ -1,0 +1,16 @@
+.navbar{
+    background-color: #033e72;
+    height: 5em;
+}
+
+.navbar-brand{
+    margin-left: 15px;
+    color: white;
+    font-size: xx-large;
+}
+
+.item{
+    color: white;
+    font-size: larger;
+    font-style:initial
+}

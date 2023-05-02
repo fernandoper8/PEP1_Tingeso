@@ -1,5 +1,5 @@
 body{
-    background-image: linear-gradient(to right top, #85f1fb, #47f6e5, #3af8b7, #6ef477, #a8eb12);
+    background-image: linear-gradient(to right top, #89f3f9, #46c4e1, #0094c6, #0065a5, #02377c);
     background-attachment: fixed;
 }
 
@@ -9,21 +9,20 @@ body{
 
 /* Para los botones */
 .btn{
-    background-color: #38B714;
+    background-color: #005fdb;
     color: white;
-    border-color: #38B714;
+    border-color: #005fdb;
     border-radius: 2em;
 }
 
 .btn:hover{
-    background-color: #2d8c10;
+    background-color: #02377c;
+    border-color: #02377c;
     color: white;
-    border-color: #38B714;
     transform: translateY(-5px);
 }
 
 .btn:active{
-    background-color: #1d5f0b;
     transition: background-color 0.25s;
 }
 
@@ -49,6 +48,6 @@ body{
     text-align: left;
     border-radius: 2em;
     box-shadow: 0 5px 15px rgba(0,0,0,.1);
-    background-color: #ecf3ea; 
+    background-color: #eaedf3; 
     color: black;
 }

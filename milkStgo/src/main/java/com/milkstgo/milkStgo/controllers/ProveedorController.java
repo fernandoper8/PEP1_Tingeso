@@ -1,6 +1,8 @@
 package com.milkstgo.milkStgo.controllers;
 
+import com.milkstgo.milkStgo.entities.PagoEntity;
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
+import com.milkstgo.milkStgo.services.PagoService;
 import com.milkstgo.milkStgo.services.ProveedorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,11 +22,15 @@ public class ProveedorController {
 
     @Autowired
     private ProveedorService proveedorService;
+    @Autowired
+    private PagoService pagoService;
 
     @GetMapping("/proveedores")
     public String proveedor(Model model){
         ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
+        ArrayList<PagoEntity> pagos = pagoService.obtenerPagos();
         model.addAttribute("proveedores", proveedores);
+        model.addAttribute("pagos", pagos);
         return "proveedores";
     }
 

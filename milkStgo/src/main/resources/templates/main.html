@@ -8,13 +8,43 @@
 
     <!-- Importacion archivo css -->
     <link rel="stylesheet" type="text/css" href="../static/css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" href="../static/css/navbar.css" th:href="@{/css/navbar.css}">
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 
 <body>
+
+    <nav class="navbar navbar-expand-lg bs-side-navbar">
+        <a class="navbar-brand" href="/"><b>milkStgo</b></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link item" href="/">Menú Principal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link item" href="/proveedores">Proveedores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link item" href="/archivos">Subir Archivos</a>
+                </li>
+                <th:block th:if="${!pagos.isEmpty()}">
+                    <li class="nav-item">
+                        <a class="nav-link item" href="/planilla">Ver Pagos</a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </nav>
+    
     <div class="container principal my-5">
         <div class="row">
             <div class="col">
@@ -30,7 +60,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Ingresa y visualiza los proveedores</h5>
                         <p class="card-text">Revisa quienes son los proveedores actuales de milkStgo</p>
-                        <a class="btn" href="/proveedores" role="button">Acceder</a>
+                        <a href="/proveedores"><button class="btn">Acceder</button></a>
                     </div>
                 </div>
             </div>
@@ -42,7 +72,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Carga los datos y el acopio</h5>
                         <p class="card-text">Ingresa los archivos .csv con los datos correspondientes</p>
-                        <a class="btn" href="/archivos" role="button">Acceder</a>
+                        <a href="/archivos"><button class="btn">Acceder</button></a>
                     </div>
                 </div>
             </div>
