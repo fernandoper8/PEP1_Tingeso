@@ -1,7 +1,7 @@
 package com.milkstgo.milkStgo.controllers;
 
-import com.milkstgo.milkStgo.entities.PagoEntity;
-import com.milkstgo.milkStgo.services.PagoService;
+import com.milkstgo.milkStgo.entities.PlanillaEntity;
+import com.milkstgo.milkStgo.services.PlanillaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,21 +13,22 @@ import java.util.ArrayList;
 
 @Controller
 @RequestMapping
-public class PagoController {
+public class PlanillaController {
 
     @Autowired
-    PagoService pagoService;
+    PlanillaService planillaService;
 
     @PostMapping("/crearPlanilla")
     public String calcularPlanilla(){
-        pagoService.crearPlanilla();
+        //revisar
+        planillaService.crearPlanilla();
         return "redirect:/";
     }
 
     @GetMapping("/planilla")
     public String verPlanilla(Model model){
-        ArrayList<PagoEntity> pagos = pagoService.obtenerPagos();
-        model.addAttribute("pagos", pagos);
+        ArrayList<PlanillaEntity> planillas = planillaService.obtenerPlanillas();
+        model.addAttribute("planillas", planillas);
         return "planilla";
     }
 }
