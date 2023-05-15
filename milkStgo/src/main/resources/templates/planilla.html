@@ -33,7 +33,7 @@
                 <li class="nav-item">
                     <a class="nav-link item" href="/archivos">Subir Archivos</a>
                 </li>
-                <th:block th:if="${!pagos.isEmpty()}">
+                <th:block th:if="${!planillas.isEmpty()}">
                     <li class="nav-item">
                         <a class="nav-link item" href="/planilla">Ver Pagos</a>
                     </li>
@@ -45,20 +45,20 @@
     <div class="container my-5">
         <div class="card px-3 py-3">
             <h3 class="text-center">Planilla de Pagos</h3>
-            <th:block th:if="${not pagos.isEmpty()}">
+            <th:block th:if="${not planillas.isEmpty()}">
                 </br>
                 <div class="container">
-                    <tr th:each="pago : ${pagos}">
+                    <tr th:each="planilla : ${planillas}">
                         <div class="card cardPagoExterna border-black">
                             <div class="card-body">
-                                <h5>Pago número <b th:text="${pago.idPago}"></b></h5>
-                                <h5>Fecha del pago: <b th:text="${#dates.format(pago.fecha, 'dd-MM-yyyy')}"></b> </br></h5>
+                                <h5>Pago número <b th:text="${planilla.idPlanilla}"></b></h5>
+                                <h5>Fecha del pago: <b th:text="${#dates.format(planilla.fecha, 'dd-MM-yyyy')}"></b> </br></h5>
                                 <div class="row">
                                     <div class="col">
                                         <div class="card cardPagoInterna h-100 border-black">
                                             <div class="card-body">
-                                                Proveedor : <b th:text="${pago.nombre}"></b> </br>
-                                                Codigo : <b th:text="${pago.codigo}"></b> </br>
+                                                Proveedor : <b th:text="${planilla.nombre}"></b> </br>
+                                                Codigo : <b th:text="${planilla.codigo}"></b> </br>
                                             </div>
                                         </div>
                                     </div>
@@ -66,10 +66,10 @@
                                     <div class="col">
                                         <div class="card cardPagoInterna h-100 border-black">
                                             <div class="card-body">
-                                                Kilos de Leche totales : <b th:text="${pago.totalKlsLeche}"></b> </br>
-                                                Frecuencia de entrega : <b th:text="${pago.frecuencia}"></b> </br>
-                                                Promedio diario de kilos : <b th:text="${pago.promedioDiarioKls}"></b> </br>
-                                                Bonificacion por frecuencia : <b>$</b><b th:text="${pago.bonoFrecuencia}"></b> </br>
+                                                Kilos de Leche totales : <b th:text="${planilla.totalKlsLeche}"></b> </br>
+                                                Frecuencia de entrega : <b th:text="${planilla.frecuencia}"></b> </br>
+                                                Promedio diario de kilos : <b th:text="${planilla.promedioDiarioKls}"></b> </br>
+                                                Bonificacion por frecuencia : <b>$</b><b th:text="${planilla.bonoFrecuencia}"></b> </br>
                                             </div>
                                         </div>
                                     </div>
@@ -79,12 +79,12 @@
                                     <div class="col">
                                         <div class="card cardPagoInterna h-100 border-black">
                                             <div class="card-body">
-                                                Porcentaje de variacion negativa de leche : <b th:text="${pago.porVariacionLeche}"></b><b>%</b> </br>
-                                                Descuento por variacion negativa de leche: <b>$</b><b th:text="${pago.dctoVariacionLeche}"></b> </br>
-                                                Porcentaje de grasa : <b th:text="${pago.porGrasa}"></b><b>%</b></br>
-                                                Descuento por variacion negativa de grasa : <b>$</b><b th:text="${pago.dctoVariacionGrasa}"></b> </br>
-                                                Porcentaje de solidos totales : <b th:text="${pago.porSolidos}"></b><b>%</b></br>
-                                                Descuento por variacion negativa de solidos totales : <b>$</b><b th:text="${pago.dctoVariacionSolidos}"></b> </br>
+                                                Porcentaje de variacion negativa de leche : <b th:text="${planilla.porVariacionLeche}"></b><b>%</b> </br>
+                                                Descuento por variacion negativa de leche: <b>$</b><b th:text="${planilla.dctoVariacionLeche}"></b> </br>
+                                                Porcentaje de grasa : <b th:text="${planilla.porGrasa}"></b><b>%</b></br>
+                                                Descuento por variacion negativa de grasa : <b>$</b><b th:text="${planilla.dctoVariacionGrasa}"></b> </br>
+                                                Porcentaje de solidos totales : <b th:text="${planilla.porSolidos}"></b><b>%</b></br>
+                                                Descuento por variacion negativa de solidos totales : <b>$</b><b th:text="${planilla.dctoVariacionSolidos}"></b> </br>
                                             </div>
                                         </div>
                                     </div>
@@ -92,9 +92,9 @@
                                     <div class="col">
                                         <div class="card cardPagoInterna h-100 border-black">
                                             <div class="card-body">
-                                                Monto Retenido : <b>$</b><b th:text="${pago.montoRetencion}"></b> </br>
-                                                Pago Total : <b>$</b><b th:text="${pago.pagoTotal}"></b> </br>
-                                                Pago Final : <b>$</b><b th:text="${pago.pagoFinal}"></b> </br>
+                                                Monto Retenido : <b>$</b><b th:text="${planilla.montoRetencion}"></b> </br>
+                                                Pago Total : <b>$</b><b th:text="${planilla.pagoTotal}"></b> </br>
+                                                Pago Final : <b>$</b><b th:text="${planilla.pagoFinal}"></b> </br>
                                             </div>
                                         </div>
                                     </div>

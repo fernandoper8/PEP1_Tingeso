@@ -36,7 +36,7 @@
                 <li class="nav-item">
                     <a class="nav-link item" href="/archivos">Subir Archivos</a>
                 </li>
-                <th:block th:if="${!pagos.isEmpty()}">
+                <th:block th:if="${!planillas.isEmpty()}">
                     <li class="nav-item">
                         <a class="nav-link item" href="/planilla">Ver Pagos</a>
                     </li>
@@ -95,7 +95,7 @@
                       </th:block>
                       
 
-                      <th:block th:if="${!pagos.isEmpty()}">
+                      <th:block th:if="${!planillas.isEmpty()}">
                         <a href="/planilla"><button class="btn mt-1">Visualizar Planilla</button></a>
                       </th:block>
                     </div>
