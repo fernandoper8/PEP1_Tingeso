@@ -2,10 +2,8 @@ package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.DatosEntity;
 import com.milkstgo.milkStgo.entities.PlanillaEntity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @NoArgsConstructor

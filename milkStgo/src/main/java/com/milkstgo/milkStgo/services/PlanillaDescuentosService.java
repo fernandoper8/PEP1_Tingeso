@@ -1,11 +1,9 @@
 package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.PlanillaEntity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @NoArgsConstructor
@@ -24,8 +22,6 @@ public class PlanillaDescuentosService {
     private static final double DCTO_VARIACION_SOLIDOS_MEDIA = 0.27;
     private static final double DCTO_VARIACION_SOLIDOS_ALTA = 0.45;
 
-    //@Autowired
-    //PlanillaService planillaService;
     private PlanillaEntity planilla;
     private PlanillaEntity planillaAnterior;
 

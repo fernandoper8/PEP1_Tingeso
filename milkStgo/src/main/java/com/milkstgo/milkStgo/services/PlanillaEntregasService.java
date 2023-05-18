@@ -61,6 +61,8 @@ public class PlanillaEntregasService {
             queTurnos = ENTREGA_SOLO_MANANA;
         else if(turnoManana == NO_ENTREGA && turnoTarde == SI_ENTREGA)
             queTurnos = ENTREGA_SOLO_TARDE;
+        else
+            queTurnos = NO_ENTREGA;
     }
     public void setDatosPlanilla(int cantidadEntregas){
         planilla.setTotalKlsLeche(totalKlsLecheEntregados);

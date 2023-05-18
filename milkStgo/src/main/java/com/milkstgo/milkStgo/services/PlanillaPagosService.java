@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @Service
@@ -46,7 +45,6 @@ public class PlanillaPagosService {
 
     public void analizarPagos() {
         calcularPagoAcopio();
-        //setBonoFrecuencia();
         setInfoDescuentos();
         setPagoTotal();
         setMontoRetencion();
@@ -136,7 +134,7 @@ public class PlanillaPagosService {
         };
     }
     public int pagoPorGrasa(){
-        int pagoCorrespondiente = PAGO_PORCENTAJE_INICIAL;
+        int pagoCorrespondiente;
         int porcentajeGrasa = planilla.getPorGrasa();
 
         if(porcentajeGrasa >= 0 && porcentajeGrasa <= 20)
@@ -145,10 +143,12 @@ public class PlanillaPagosService {
             pagoCorrespondiente = PAGO_GRASA_MEDIA;
         else if(porcentajeGrasa >= 46)
             pagoCorrespondiente = PAGO_GRASA_ALTA;
+        else
+            pagoCorrespondiente = PAGO_PORCENTAJE_INICIAL;
         return pagoCorrespondiente;
     }
     public int pagoPorSolidos(){
-        int pagoCorrespondiente = PAGO_PORCENTAJE_INICIAL;
+        int pagoCorrespondiente;
         int porcentajeSolidos = planilla.getPorSolidos();
 
         if(porcentajeSolidos >= 0 && porcentajeSolidos <= 7)
@@ -159,6 +159,8 @@ public class PlanillaPagosService {
             pagoCorrespondiente = PAGO_SOLIDOS_NORMALES;
         else if(porcentajeSolidos >= 36)
             pagoCorrespondiente = PAGO_SOLIDOS_ALTOS;
+        else
+            pagoCorrespondiente = PAGO_PORCENTAJE_INICIAL;
         return pagoCorrespondiente;
     }
     public void actualizarPlanilla(PlanillaEntity planillaActualizada){

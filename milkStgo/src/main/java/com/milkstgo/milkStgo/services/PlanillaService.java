@@ -7,6 +7,8 @@ import com.milkstgo.milkStgo.entities.ProveedorEntity;
 import com.milkstgo.milkStgo.repositories.PlanillaRepository;
 import lombok.Generated;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.Date;
 
 @Service
 @Getter
+@Setter
 public class PlanillaService {
     private static final int PLANILLA_ANTERIOR = 0;
     private PlanillaEntity planilla;
@@ -62,7 +65,7 @@ public class PlanillaService {
     }
 
     public boolean tieneAcopios(ArrayList<AcopioEntity> acopios){
-        return (acopios.size() != 0);
+        return (!acopios.isEmpty());
     }
 
     @Generated
