@@ -105,6 +105,10 @@ public class DatosService {
     }
 
     public DatosEntity obtenerDataPorProveedor(String codigoProveedor){
-        return datosRepository.obtenerDatosPorProveedor(codigoProveedor).get(0);
+        DatosEntity datosProveedor = null;
+        ArrayList<DatosEntity> datos = datosRepository.obtenerDatosPorProveedor(codigoProveedor);
+        if (datos.size() != 0)
+            datosProveedor = datos.get(0);
+        return datosProveedor;
     }
 }

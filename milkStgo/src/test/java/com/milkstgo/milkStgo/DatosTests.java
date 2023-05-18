@@ -90,8 +90,7 @@ class DatosTests {
     @Test // No hay datas del proveedor 1030
     void obtenerDataPorProveedorTest2(){
         datosRepository.deleteAll();
-        DatosEntity datosResultado = datosService.obtenerDataPorProveedor("1030");
-        assertNull(datosResultado);
+        assertNull(datosService.obtenerDataPorProveedor("1030"));
         datosRepository.deleteAll();
     }
 }
