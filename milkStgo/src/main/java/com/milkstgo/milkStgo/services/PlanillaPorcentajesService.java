@@ -5,18 +5,18 @@ import com.milkstgo.milkStgo.entities.PlanillaEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
-public class PlanillaPorcentajes {
-    private PlanillaService planillaService = new PlanillaService();
-
+@Service
+public class PlanillaPorcentajesService {
     private PlanillaEntity planilla;
     private PlanillaEntity planillaAnterior;
     private DatosEntity datosProveedor;
 
-    public PlanillaPorcentajes(PlanillaEntity planilla, PlanillaEntity planillaAnterior, DatosEntity datosProveedor){
+    public PlanillaPorcentajesService(PlanillaEntity planilla, PlanillaEntity planillaAnterior, DatosEntity datosProveedor){
         this.planilla = planilla;
         this.planillaAnterior = planillaAnterior;
         this.datosProveedor = datosProveedor;
@@ -32,6 +32,7 @@ public class PlanillaPorcentajes {
         planilla.setPorSolidos(porcentajeSolidos);
     }
     public void setVariaciones(){
+        PlanillaService planillaService = new PlanillaService();
         if(planillaService.esLaPlanillaAnterior(planillaAnterior))
             obtenerVariacionesConPagoAnterior();
         else

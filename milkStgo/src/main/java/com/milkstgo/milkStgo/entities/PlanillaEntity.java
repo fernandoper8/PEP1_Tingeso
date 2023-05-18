@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 @Table(name = "planilla")
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 public class PlanillaEntity {
     @Id
     @NotNull

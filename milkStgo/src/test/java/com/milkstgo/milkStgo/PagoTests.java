@@ -1,729 +1,923 @@
+
 package com.milkstgo.milkStgo;
+
+import com.milkstgo.milkStgo.entities.DatosEntity;
+import com.milkstgo.milkStgo.entities.PlanillaEntity;
+import com.milkstgo.milkStgo.entities.ProveedorEntity;
+import com.milkstgo.milkStgo.repositories.PlanillaRepository;
+import com.milkstgo.milkStgo.services.AcopioService;
+import com.milkstgo.milkStgo.services.PlanillaDescuentosService;
+import com.milkstgo.milkStgo.services.PlanillaEntregasService;
+import com.milkstgo.milkStgo.services.PlanillaPagosService;
+import com.milkstgo.milkStgo.services.PlanillaPorcentajesService;
+import com.milkstgo.milkStgo.services.PlanillaService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.milkstgo.milkStgo.entities.AcopioEntity;
-import com.milkstgo.milkStgo.entities.PagoEntity;
 import com.milkstgo.milkStgo.repositories.AcopioRepository;
-import com.milkstgo.milkStgo.repositories.PagoRepository;
-import com.milkstgo.milkStgo.services.PagoService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 
 @SpringBootTest
 class PagoTests {
+    private static final String ID_PROVEEDOR1 = "5000";
+    private static final String ID_PROVEEDOR2 = "5001";
 
     @Autowired
-    PagoService pagoService;
+    PlanillaService planillaService;
     @Autowired
-    PagoRepository pagoRepository;
+    PlanillaPorcentajesService planillaPorcentajesService;
+    @Autowired
+    PlanillaRepository planillaRepository;
+    @Autowired
+    AcopioService acopioService;
     @Autowired
     AcopioRepository acopioRepository;
 
-    @Test
-    void obtenerPagosTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pagoRepository.save(pago);
-        assertNotNull(pagoService.obtenerPagos());
-        pagoRepository.delete(pago);
-    } 
-
-    @Test // No hay pagos registrados
-    void obtenerPagosPorProveedorTest1(){
-        String codigo = "1013";
-        PagoEntity pagoResultado = pagoService.obtenerPagosPorProveedor(codigo);
-        assertEquals(-1, pagoResultado.getComparado());
-        pagoRepository.delete(pagoResultado);
+    // Metodos para crear datos utiles para el testeo
+    private ProveedorEntity crearProveedor1(){
+        ProveedorEntity proveedor = new ProveedorEntity();
+        proveedor.setCodigo(ID_PROVEEDOR1);
+        proveedor.setNombre("Proveedor1");
+        proveedor.setCategoria("A");
+        proveedor.setRetencion("Si");
+        return proveedor;
     }
-
-    @Test // Se encuentra un pago del mismo proveedor
-    void obtenerPagosPorProveedorTest2(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pagoRepository.save(pago); 
-        
-        PagoEntity pagoResultado = pagoService.obtenerPagosPorProveedor(pago.getCodigo());
-        assertEquals(pago, pagoResultado);
-        pagoRepository.delete(pago);
-    }
-
-    @Test // No se encuentra un pago del mismo proveedor
-    void obtenerPagosPorProveedorTest3(){
-        // Pago no guardado
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-
-        // Pago guardado
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setNombre("Boris Brejcha");
-        pago2.setCodigo("1003");
-        pago2.setCategoria("B");
-        pago2.setComparado(0);
-        pagoRepository.save(pago2); 
-
-        PagoEntity pagoResultado = pagoService.obtenerPagosPorProveedor(pago.getCodigo());
-        assertEquals(-1, pagoResultado.getComparado());
-        pagoRepository.delete(pago2);
-    }
-
-    @Test // Entregas en tarde y mañana -> turno = 3
-    void setInfoPorEntregaTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pagoRepository.save(pago);
-        
+    private AcopioEntity crearAcopio1(String id_proveedor){
         AcopioEntity acopio = new AcopioEntity();
-        acopio.setId_acopio(50);
-        acopio.setFecha("09-04-2023");
-        acopio.setId_proveedor("1013");
-        acopio.setKls_leche("1000");
+        acopio.setFecha("17-03-2023");
+        acopio.setId_proveedor(id_proveedor);
+        acopio.setKls_leche("100");
         acopio.setTurno("M");
+        return acopio;
+    }
+    private DatosEntity crearDatos1(String id_proveedor){
+        DatosEntity datos = new DatosEntity();
+        datos.setId_proveedor(id_proveedor);
+        datos.setPor_grasa(35);
+        datos.setPor_solidos(35);
+        return datos;
+    }
 
+    // Tests PlanillaService
+    @Test
+    void tieneAcopiosTest(){
+        ArrayList<AcopioEntity> acopios1 = acopioService.obtenerAcopiosPorProveedor(ID_PROVEEDOR1);
+        ArrayList<AcopioEntity> acopios2 = acopioService.obtenerAcopiosPorProveedor(ID_PROVEEDOR2);
+        acopios1.add(crearAcopio1(ID_PROVEEDOR1));
+        assertEquals(true, planillaService.tieneAcopios(acopios1));
+        assertEquals(false, planillaService.tieneAcopios(acopios2));
+    }
+    @Test
+    void guardarPlanillaTest(){
+        PlanillaEntity nuevaPlanilla = new PlanillaEntity();
+
+        //int cantidadPlanillasGuardadasAntes = planillaRepository.findAll().size();
+        planillaService.guardarPlanilla(nuevaPlanilla);
+        int cantidadPlanillasGuardadas = planillaRepository.findAll().size();
+        assertEquals(cantidadPlanillasGuardadas, 1);
+        planillaRepository.deleteAll();
+    }
+    @Test
+    void actualizarPlanillaAnteriorTest(){
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        
+        int comparadoAnterior = 0;
+        planillaAnterior.setComparado(comparadoAnterior);
+        planillaService.actualizarPlanillaAnterior(planillaAnterior);
+
+        // Caso 1: Se cambia el comparado de 0 a 1 y se guarda en el repositorio
+        assertEquals(-1, planillaAnterior.getComparado());
+        assertEquals(1, planillaRepository.findAll().size());
+        
+        // Caso 2: El comparado de la planilla de entrada ya esta en -1, por lo que no es la ultima planilla
+        // por lo que no se guarda en el repositorio
+        assertEquals(-1, planillaAnterior.getComparado());
+        assertEquals(1, planillaRepository.findAll().size());
+        
+        planillaRepository.deleteAll();
+    }
+    @Test
+    void setInfoRestanteTest(){
+        PlanillaService planillaServiceT= new PlanillaService();
+        planillaServiceT.setInfoRestante();
+
+        assertEquals(0, planillaServiceT.getPlanilla().getComparado()); 
+        // no se testea el atributo de fecha, puesto que esta se genera en el momento
+    }
+    @Test
+    void setInfoProveedorTest(){
+        ProveedorEntity proveedor = crearProveedor1();
+        PlanillaService planillaServiceT= new PlanillaService();
+        planillaServiceT.setInfoProveedor(proveedor);
+
+        String nombreProveedor = proveedor.getNombre();
+        String codigoProveedor = proveedor.getCodigo();
+        String categoriaProveedor = proveedor.getCategoria();
+
+        assertEquals(nombreProveedor, planillaServiceT.getPlanilla().getNombre());
+        assertEquals(codigoProveedor, planillaServiceT.getPlanilla().getCodigo());
+        assertEquals(categoriaProveedor, planillaServiceT.getPlanilla().getCategoria());
+    }
+    @Test
+    void reiniciarPlanillaTest(){
+        PlanillaService planillaServiceT = new PlanillaService();
+        planillaServiceT.reiniciarPlanilla();
+        assertEquals(planillaServiceT.getPlanilla(), new PlanillaEntity());
+    }
+    @Test
+    void actualizarPlanillaTest(){
+        PlanillaEntity nuevaPlanilla = new PlanillaEntity();
+        nuevaPlanilla.setCategoria("A");
+        PlanillaService planillaServiceT = new PlanillaService();
+        planillaServiceT.actualizarPlanilla(nuevaPlanilla);
+        assertEquals(nuevaPlanilla, planillaServiceT.getPlanilla());
+    }
+    @Test
+    void obtenerPlanillasTest(){
+        PlanillaEntity nuevaPlanilla = new PlanillaEntity();
+
+        assertEquals(0, planillaService.obtenerPlanillas().size());
+        planillaService.guardarPlanilla(nuevaPlanilla);
+        assertEquals(1, planillaService.obtenerPlanillas().size());
+
+        planillaRepository.deleteAll();
+    }
+    @Test
+    void obtenerPlanillaAnteriorProveedorTest(){
+        // Caso 1: No hay planillas guardadas
+        assertEquals(-1, planillaService.obtenerPlanillaAnteriorProveedor(ID_PROVEEDOR1).getComparado());
+        // Caso 2: Hay planillas guardadas
+        PlanillaEntity nuevaPlanilla = new PlanillaEntity();
+        nuevaPlanilla.setCodigo(ID_PROVEEDOR1);
+        nuevaPlanilla.setComparado(0); // Es la ultima
+        PlanillaEntity nuevaPlanilla2 = new PlanillaEntity();
+        nuevaPlanilla2.setCodigo(ID_PROVEEDOR1);
+        nuevaPlanilla2.setComparado(-1); 
+        planillaService.guardarPlanilla(nuevaPlanilla);
+        planillaService.guardarPlanilla(nuevaPlanilla2);
+
+        assertEquals(nuevaPlanilla, planillaService.obtenerPlanillaAnteriorProveedor(ID_PROVEEDOR1));
+        planillaRepository.deleteAll();
+    }
+    @Test
+    void esLaPlanillaAnteriorTest(){
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        planillaAnterior.setComparado(0);
+
+        // Caso 1: Es la planilla anterior
+        assertEquals(true, planillaService.esLaPlanillaAnterior(planillaAnterior));
+
+        // Caso 2: No es la planilla anterior
+        planillaAnterior.setComparado(-1);
+        assertEquals(false, planillaService.esLaPlanillaAnterior(planillaAnterior));
+    }
+
+    // Tests PlanillaPorcentajeService
+
+    // PPS: PlantillaPorcentajeService
+    PlanillaEntity planillaTestPPS;
+    PlanillaEntity planillaAnteriorTestPPS; // No tiene datos anteriores
+    DatosEntity datosTestPPS;
+
+    private void iniciarObjetosTestPPS(){
+        planillaTestPPS = new PlanillaEntity();
+        planillaAnteriorTestPPS = new PlanillaEntity();
+        datosTestPPS = crearDatos1(ID_PROVEEDOR1); // 5000, 35, 35
+    }
+
+    @Test
+    void setVariacionesSinPagoAnteriorTest(){
+        iniciarObjetosTestPPS();
+        PlanillaPorcentajesService planillaPorcentajeServiceT = new PlanillaPorcentajesService(planillaTestPPS, planillaAnteriorTestPPS, datosTestPPS);
+        planillaPorcentajeServiceT.setVariacionesSinPagoAnterior();
+
+        assertEquals(0, planillaPorcentajeServiceT.getPlanilla().getPorVariacionLeche());
+        assertEquals(0, planillaPorcentajeServiceT.getPlanilla().getPorVariacionGrasa());
+        assertEquals(0, planillaPorcentajeServiceT.getPlanilla().getPorVariacionSolidos());
+    }
+    @Test
+    void setPorcentajeVariacionesTest(){
+        iniciarObjetosTestPPS();
+        PlanillaPorcentajesService planillaPorcentajeServiceT = new PlanillaPorcentajesService(planillaTestPPS, planillaAnteriorTestPPS, datosTestPPS);
+        planillaPorcentajeServiceT.setPorcentajeVariaciones(10, 10,10);
+
+        assertEquals(10, planillaPorcentajeServiceT.getPlanilla().getPorVariacionLeche());
+        assertEquals(10, planillaPorcentajeServiceT.getPlanilla().getPorVariacionGrasa());
+        assertEquals(10, planillaPorcentajeServiceT.getPlanilla().getPorVariacionSolidos());
+    }
+    @Test
+    void calculoVariacionDeUnPorcentajeTest(){
+        assertEquals(10, planillaPorcentajesService.calculoVariacionDeUnPorcentaje(20, 10));
+    }
+    @Test
+    void calculoVariaciones(){
+        PlanillaEntity planillaNueva = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+
+        planillaNueva.setTotalKlsLeche(100);
+        planillaNueva.setPorGrasa(10);
+        planillaNueva.setPorSolidos(10);
+
+        planillaAnterior.setTotalKlsLeche(50);
+        planillaAnterior.setPorGrasa(5);
+        planillaAnterior.setPorSolidos(5);
+
+        PlanillaPorcentajesService planillaPorcentajesServiceT = new PlanillaPorcentajesService(planillaNueva, planillaAnterior, datosTestPPS);
+
+        float resLeche;
+        int resGrasa;
+        int resSolido;
+
+        // Caso 1: Variaciones negativas, resultado para todos = 0;
+        
+        // Primero se testea metodo por metodo
+        resLeche = planillaPorcentajesServiceT.calculoVariacionLeche();
+        assertEquals(-100.0, resLeche);
+        resGrasa = planillaPorcentajesServiceT.calculoVariacionGrasa();
+        assertEquals(-5, resGrasa);
+        resSolido = planillaPorcentajesServiceT.calculoVariacionSolidos();
+        assertEquals(-5, resSolido);
+
+        // Luego se testea el metodo que los llama a todos
+        planillaPorcentajesServiceT.setVariaciones();
+        assertEquals(-100.0, planillaPorcentajesServiceT.getPlanilla().getPorVariacionLeche());
+        assertEquals(-5.0, planillaPorcentajesServiceT.getPlanilla().getPorVariacionGrasa());
+        assertEquals(-5.0, planillaPorcentajesServiceT.getPlanilla().getPorVariacionSolidos());
+
+        // Caso 2: Hay variaciones
+        PlanillaEntity planillaNueva2 = new PlanillaEntity();
+        PlanillaEntity planillaAnterior2 = new PlanillaEntity();
+
+        planillaNueva2.setTotalKlsLeche(100);
+        planillaNueva2.setPorGrasa(10);
+        planillaNueva2.setPorSolidos(10);
+
+        planillaAnterior2.setTotalKlsLeche(150);
+        planillaAnterior2.setPorGrasa(20);
+        planillaAnterior2.setPorSolidos(20);
+
+        PlanillaPorcentajesService planillaPorcentajesServiceT2 = new PlanillaPorcentajesService(planillaNueva2, planillaAnterior2, datosTestPPS);
+        // Primero se testea metodo por metodo
+        resLeche = planillaPorcentajesServiceT2.calculoVariacionLeche();
+        assertEquals(33.333335876464844, resLeche);
+        resGrasa = planillaPorcentajesServiceT2.calculoVariacionGrasa();
+        assertEquals(10.0, resGrasa);
+        resSolido = planillaPorcentajesServiceT2.calculoVariacionSolidos();
+        assertEquals(10.0, resSolido);
+
+        // Luego se testea el metodo que los llama a todos
+        planillaPorcentajesServiceT2.setVariaciones();
+        assertEquals(33.333335876464844, planillaPorcentajesServiceT2.getPlanilla().getPorVariacionLeche());
+        assertEquals(10.0, planillaPorcentajesServiceT2.getPlanilla().getPorVariacionGrasa());
+        assertEquals(10.0, planillaPorcentajesServiceT2.getPlanilla().getPorVariacionSolidos());
+
+    }
+    @Test
+    void setCaracteristicasTest(){
+        iniciarObjetosTestPPS();
+        PlanillaPorcentajesService planillaPorcentajeServiceT = new PlanillaPorcentajesService(planillaTestPPS, planillaAnteriorTestPPS, datosTestPPS);
+        planillaPorcentajeServiceT.setCaracteristicas();
+
+        assertEquals(35, planillaPorcentajeServiceT.getPlanilla().getPorGrasa());
+        assertEquals(35, planillaPorcentajeServiceT.getPlanilla().getPorSolidos());
+    }
+    @Test
+    void analizarDatosTest(){
+        PlanillaEntity planillaNueva = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        DatosEntity datosTestPPS = crearDatos1(ID_PROVEEDOR1);
+
+        planillaNueva.setTotalKlsLeche(100);
+        planillaNueva.setPorGrasa(10);
+        planillaNueva.setPorSolidos(10);
+        planillaAnterior.setComparado(-1);
+
+        PlanillaPorcentajesService planillaPorcentajesServiceT = new PlanillaPorcentajesService(planillaNueva, planillaAnterior, datosTestPPS);
+        planillaPorcentajesServiceT.analizarDatos();
+
+        assertEquals(35, planillaPorcentajesServiceT.getPlanilla().getPorGrasa());
+        assertEquals(35, planillaPorcentajesServiceT.getPlanilla().getPorSolidos());
+        assertEquals(0, planillaPorcentajesServiceT.getPlanilla().getPorVariacionLeche());
+        assertEquals(0, planillaPorcentajesServiceT.getPlanilla().getPorVariacionGrasa());
+        assertEquals(0, planillaPorcentajesServiceT.getPlanilla().getPorVariacionSolidos());
+    }
+
+    // Tests PlanillaEntregasService
+    @Test
+    void setPromedioKlsEntregadosTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        planilla.setTotalKlsLeche(1000);
+        PlanillaEntregasService planillaEntregasService = new PlanillaEntregasService(planilla);
+        planillaEntregasService.setPromedioKlsEntregados(10);
+        
+        assertEquals(100, planillaEntregasService.getPlanilla().getPromedioDiarioKls());
+    }
+    @Test
+    void setDatosPlanillaTest(){
+        int frecuencia = 10;
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntregasService planillaEntregasService = new PlanillaEntregasService(planilla);
+        planillaEntregasService.setTotalKlsLecheEntregados(1000);
+        planillaEntregasService.setQueTurnos(2);
+        planillaEntregasService.setDatosPlanilla(frecuencia);
+
+        assertEquals(1000, planillaEntregasService.getPlanilla().getTotalKlsLeche());
+        assertEquals(2, planillaEntregasService.getPlanilla().getQueTurnos());
+        assertEquals(10, planillaEntregasService.getPlanilla().getFrecuencia());
+    }
+    @Test
+    void queTurnosEntregaTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        
+        // Caso 1: Ambos turnos se entrega
+        PlanillaEntregasService planillaEntregasService = new PlanillaEntregasService(planilla);
+        planillaEntregasService.setTurnoManana(1);
+        planillaEntregasService.setTurnoTarde(1);
+        planillaEntregasService.queTurnosEntrega();
+        assertEquals(3, planillaEntregasService.getQueTurnos());
+
+        // Caso 2: Se entrega solo turno mañana
+        planillaEntregasService = new PlanillaEntregasService(planilla);
+        planillaEntregasService.setTurnoManana(1);
+        planillaEntregasService.setTurnoTarde(0);
+        planillaEntregasService.queTurnosEntrega();
+        assertEquals(2, planillaEntregasService.getQueTurnos());
+
+        // Caso 3: Se entrega solo turno tarde
+        planillaEntregasService = new PlanillaEntregasService(planilla);
+        planillaEntregasService.setTurnoManana(0);
+        planillaEntregasService.setTurnoTarde(1);
+        planillaEntregasService.queTurnosEntrega();
+        assertEquals(1, planillaEntregasService.getQueTurnos());
+    }
+    @Test
+    void analizarTurnosTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntregasService planillaEntregasService = new PlanillaEntregasService(planilla);
+        AcopioEntity acopio = new AcopioEntity();
+        String turno;
+
+    
+        // Caso 1: Turno mañana
+        turno = "M";
+        acopio.setTurno(turno);
+        planillaEntregasService.analizarTurno(acopio);
+        assertEquals(1, planillaEntregasService.getTurnoManana());
+        assertEquals(0, planillaEntregasService.getTurnoTarde());
+
+        // Caso 2: Turno tarde
+        turno = "T";
+        acopio.setTurno(turno);
+        planillaEntregasService.analizarTurno(acopio);
+        assertEquals(1, planillaEntregasService.getTurnoManana());
+        assertEquals(1, planillaEntregasService.getTurnoTarde());
+    }
+    @Test
+    void sumarLecheEntregadaTest(){
+        AcopioEntity acopio = new AcopioEntity();
+        acopio.setKls_leche("100");
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntregasService planillaEntregasService = new PlanillaEntregasService(planilla);
+        planillaEntregasService.sumarLecheEntregada(acopio);
+        assertEquals(100, planillaEntregasService.getTotalKlsLecheEntregados());
+        planillaEntregasService.sumarLecheEntregada(acopio);
+        planillaEntregasService.sumarLecheEntregada(acopio);
+        planillaEntregasService.sumarLecheEntregada(acopio);
+        assertEquals(400, planillaEntregasService.getTotalKlsLecheEntregados());
+    }
+    @Test
+    void analizarAcopiosTest(){
+        ArrayList<AcopioEntity> acopios = new ArrayList<>();
+        AcopioEntity acopio1 = new AcopioEntity();
+        acopio1.setId_proveedor("1");
+        acopio1.setFecha("2021-01-01");
+        acopio1.setKls_leche("100");
+        acopio1.setTurno("M");
         AcopioEntity acopio2 = new AcopioEntity();
-        acopio2.setId_acopio(51);
-        acopio2.setFecha("09-04-2023");
-        acopio2.setId_proveedor("1013");
+        acopio2.setId_proveedor("1");
+        acopio2.setFecha("2021-01-01");
         acopio2.setKls_leche("200");
-        acopio2.setTurno("T");
-
-        ArrayList<AcopioEntity> acopios = new ArrayList<AcopioEntity>();
-        acopios.add(acopio);
+        acopio2.setTurno("M");
+        PlanillaEntregasService planillaEntregasService = new PlanillaEntregasService(new PlanillaEntity());
+        acopios.add(acopio1);
         acopios.add(acopio2);
+        planillaEntregasService.analizarAcopios(acopios);
 
-        PagoEntity pagoResultado = pagoService.setInfoPorEntrega(acopios, pago);
-
-        assertEquals(1200, pagoResultado.getTotalKlsLeche());
-        assertEquals(3, pagoResultado.getQueTurnos());
-        assertEquals(2, pagoResultado.getFrecuencia());
-        assertEquals(600, pagoResultado.getPromedioDiarioKls());
-        pagoRepository.delete(pago);
+        assertEquals(300, planillaEntregasService.getTotalKlsLecheEntregados());
+        assertEquals(2, planillaEntregasService.getQueTurnos());
+        assertEquals(1, planillaEntregasService.getTurnoManana());
+        assertEquals(0, planillaEntregasService.getTurnoTarde());
     }
 
-    @Test // Entregas en mañana -> turno = 2
-    void setInfoPorEntregaTest2(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pagoRepository.save(pago);
-        
-        AcopioEntity acopio = new AcopioEntity();
-        acopio.setId_acopio(50);
-        acopio.setFecha("09-04-2023");
-        acopio.setId_proveedor("1013");
-        acopio.setKls_leche("1000");
-        acopio.setTurno("M");
-
-        ArrayList<AcopioEntity> acopios = new ArrayList<AcopioEntity>();
-        acopios.add(acopio);
-
-        PagoEntity pagoResultado = pagoService.setInfoPorEntrega(acopios, pago);
-
-        assertEquals(1000, pagoResultado.getTotalKlsLeche());
-        assertEquals(2, pagoResultado.getQueTurnos());
-        assertEquals(1, pagoResultado.getFrecuencia());
-        assertEquals(1000, pagoResultado.getPromedioDiarioKls());
-        pagoRepository.delete(pago);
-    }
-
-    @Test // Entregas en tarde -> turno = 1
-    void setInfoPorEntregaTest3(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pagoRepository.save(pago);
-        
-        AcopioEntity acopio = new AcopioEntity();
-        acopio.setId_acopio(50);
-        acopio.setFecha("09-04-2023");
-        acopio.setId_proveedor("1013");
-        acopio.setKls_leche("1000");
-        acopio.setTurno("T");
-
-        ArrayList<AcopioEntity> acopios = new ArrayList<AcopioEntity>();
-        acopios.add(acopio);
-
-        PagoEntity pagoResultado = pagoService.setInfoPorEntrega(acopios, pago);
-
-        assertEquals(1000, pagoResultado.getTotalKlsLeche());
-        assertEquals(1, pagoResultado.getQueTurnos());
-        assertEquals(1, pagoResultado.getFrecuencia());
-        assertEquals(1000, pagoResultado.getPromedioDiarioKls());
-        pagoRepository.delete(pago);
-    }
-
-    @Test // No hay entregas
-    void setInfoPorEntregaTest4(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pagoRepository.save(pago);
-
-        ArrayList<AcopioEntity> acopios = new ArrayList<AcopioEntity>();
-
-        PagoEntity pagoResultado = pagoService.setInfoPorEntrega(acopios, pago);
-
-        assertEquals(0, pagoResultado.getTotalKlsLeche());
-        assertEquals(0, pagoResultado.getQueTurnos());
-        assertEquals(0, pagoResultado.getFrecuencia());
-        assertEquals(0, pagoResultado.getPromedioDiarioKls());
-        pagoRepository.delete(pago);
-    }
-
-    @Test // Hay pago anterior
-    void setVariacionesTest1(){
-        PagoEntity pago1 = new PagoEntity();
-        pago1.setNombre("Armin van Buuren");
-        pago1.setCodigo("1013");
-        pago1.setCategoria("A");
-        pago1.setComparado(0);
-        pago1.setTotalKlsLeche(1820);
-        pago1.setPorGrasa(72);
-        pago1.setPorSolidos(70);
-
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setNombre("Armin van Buuren");
-        pago2.setCodigo("1013");
-        pago2.setCategoria("A");
-        pago2.setComparado(0);
-        pago2.setTotalKlsLeche(1200);
-        pago2.setPorGrasa(37);
-        pago2.setPorSolidos(31);
-
-        PagoEntity pagoResultado = pagoService.setVariaciones(pago2, pago1);
-
-        assertEquals(34, (int)pagoResultado.getPorVariacionLeche());
-        assertEquals(35, pagoResultado.getPorVariacionGrasa());
-        assertEquals(39, pagoResultado.getPorVariacionSolidos());
-    }
-
-    @Test // No hay pago anterior
-    void setVariacionesTest2(){
-        PagoEntity pago1 = new PagoEntity();
-        pago1.setNombre("Armin van Buuren");
-        pago1.setCodigo("1013");
-        pago1.setCategoria("A");
-        pago1.setComparado(0);
-        pago1.setTotalKlsLeche(1820);
-        pago1.setPorGrasa(72);
-        pago1.setPorSolidos(70);
-
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setComparado(-1);
-
-        PagoEntity pagoResultado = pagoService.setVariaciones(pago1, pago2);
-
-        assertEquals(0, pagoResultado.getPorVariacionLeche());
-        assertEquals(0, pagoResultado.getPorVariacionGrasa());
-        assertEquals(0, pagoResultado.getPorVariacionSolidos());
-    }
-
-    @Test // Frecuencia menor a 10
-    void setAcopioTest1(){ 
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
-        pago.setFrecuencia(1);
-    
-        PagoEntity pagoResultado = pagoService.setAcopio(pago);
-
-        assertEquals(1765400, pagoResultado.getPagoAcopio());
-        assertEquals(0, pagoResultado.getBonoFrecuencia());
-    }
-
-    @Test // Frecuencia mayor a 10
-    void setAcopioTest2(){ 
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
-        pago.setFrecuencia(11);
-        pago.setQueTurnos(3);
-    
-        PagoEntity pagoResultado = pagoService.setAcopio(pago);
-
-        assertEquals(1765400*1.20, pagoResultado.getPagoAcopio());
-        assertEquals(1765400*0.20, pagoResultado.getBonoFrecuencia());
-    }
-
+    // Tests PlanillaDescuentosService
     @Test
-    void pagoPorCategoriaTest1(){
-        String cat1 = "A";	
-        String cat2 = "B";
-        String cat3 = "C";
-        String cat4 = "D";
-
-        assertEquals(700, pagoService.pagoPorCategoria(cat1));
-        assertEquals(550, pagoService.pagoPorCategoria(cat2));
-        assertEquals(400, pagoService.pagoPorCategoria(cat3));
-        assertEquals(250, pagoService.pagoPorCategoria(cat4));
-    }
-
+    void descuentoPorSolidosTest(){
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        PlanillaEntity planilla = new PlanillaEntity();
+        double resultado;
+        // Caso 1: entre 0 y 6
+        planilla.setPorVariacionSolidos(5);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorSolidos();
+        assertEquals(0, resultado);
+        // Caso 2: entre 7 y 12
+        planilla.setPorVariacionSolidos(10);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorSolidos();
+        assertEquals(0.18, resultado);
+        // Caso 3: entre 13 y 35
+        planilla.setPorVariacionSolidos(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorSolidos();
+        assertEquals(0.27, resultado);
+        // Caso 4: mayor o igual a 36
+        planilla.setPorVariacionSolidos(36);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorSolidos();
+        assertEquals(0.45, resultado);
+    }   
     @Test
-    void pagoPorGrasaTest1(){
-        int porGrasa1 = 10;
-        int porGrasa2 = 25;
-        int porGrasa3 = 55;
-        int porGrasa4 = -20;
-
-        assertEquals(30, pagoService.pagoPorGrasa(porGrasa1));
-        assertEquals(80, pagoService.pagoPorGrasa(porGrasa2));
-        assertEquals(120, pagoService.pagoPorGrasa(porGrasa3));
-        assertEquals(0, pagoService.pagoPorGrasa(porGrasa4));
+    void descuentoPorGrasaTest(){
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        PlanillaEntity planilla = new PlanillaEntity();
+        double resultado;
+        // Caso 1: entre 0 y 15 = retornar 0
+        planilla.setPorVariacionGrasa(10);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorGrasa();
+        assertEquals(0, resultado);
+        // Caso 2: entre 16 y 25 = retornar 0.12
+        planilla.setPorVariacionGrasa(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorGrasa();
+        assertEquals(0.12, resultado);
+        // Caso 3: entre 26 y 40 = retornar 0.20
+        planilla.setPorVariacionGrasa(30);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorGrasa();
+        assertEquals(0.20, resultado);
+        // Caso 4: mayor o igual a 41 = retornar 0.30
+        planilla.setPorVariacionGrasa(41);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorGrasa();
+        assertEquals(0.30, resultado);
     }
-
     @Test
-    void pagoPorGrasaSolidosTest1(){
-        int porSolido1 = 5;
-        int porSolido2 = 15;
-        int porSolido3 = 25;
-        int porSolido4 = 45;
-        int porSolido5 = -20;
-
-        assertEquals(-130, pagoService.pagoPorSolidos(porSolido1));
-        assertEquals(-90, pagoService.pagoPorSolidos(porSolido2));
-        assertEquals(95, pagoService.pagoPorSolidos(porSolido3));
-        assertEquals(150, pagoService.pagoPorSolidos(porSolido4));
-        assertEquals(0, pagoService.pagoPorSolidos(porSolido5));
+    void descuentoPorLecheTest(){
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        PlanillaEntity planilla = new PlanillaEntity();
+        double resultado;
+        // Caso 1: entre 0 y 8 = retornar 0
+        planilla.setPorVariacionLeche(5);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorLeche();
+        assertEquals(0, resultado);
+        // Caso 2: entre 9 y 25 = retornar 0.07
+        planilla.setPorVariacionLeche(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorLeche();
+        assertEquals(0.07, resultado);
+        // Caso 3: entre 26 y 45 = retornar 0.15
+        planilla.setPorVariacionLeche(30);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorLeche();
+        assertEquals(0.15, resultado);
+        // Caso 4: mayor o igual a 46 = retornar 0.30
+        planilla.setPorVariacionLeche(46);
+        planillaDescuentosService.setPlanilla(planilla);
+        resultado = planillaDescuentosService.descuentoPorLeche();
+        assertEquals(0.30, resultado);
     }
-
-    @Test // Entregas mañana y tarde -> queTurnos = 3
-    void bonoFrecuenciaTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
-        pago.setFrecuencia(11);
-        pago.setQueTurnos(3);
-    
-        pago = pagoService.setAcopio(pago);
-
-        int resultado = pagoService.bonoFrecuencia(pago, 1765400);
-
-        assertEquals(1.20*1765400, resultado);
+    @Test
+    void calcularDescuentoPorSolidosTest(){
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        PlanillaEntity planilla = new PlanillaEntity();
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionSolidos(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        int resultado = planillaDescuentosService.calcularDescuentoPorSolidos();
+        int valorEsperado = 2700; // 10000 * 0.27
+        assertEquals(valorEsperado, resultado);
     }
-
-    @Test // Entregas en mañana -> turno = 2
-    void bonoFrecuenciaTest2(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
-        pago.setFrecuencia(11);
-        pago.setQueTurnos(2);
-    
-        pago = pagoService.setAcopio(pago);
-
-        int resultado = pagoService.bonoFrecuencia(pago, 1765400);
-
-        assertEquals((int)(1.12*1765400), resultado);
+    @Test
+    void calcularDescuentoPorGrasaTest(){
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        PlanillaEntity planilla = new PlanillaEntity();
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionGrasa(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        int resultado = planillaDescuentosService.calcularDescuentoPorGrasa();
+        int valorEsperado = 1200; // 10000 * 0.12
+        assertEquals(valorEsperado, resultado);
     }
-
-    @Test // Entregas en tarde -> turno = 1
-    void bonoFrecuenciaTest3(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
-        pago.setFrecuencia(11);
-        pago.setQueTurnos(1);
-    
-        pago = pagoService.setAcopio(pago);
-
-        int resultado = pagoService.bonoFrecuencia(pago, 1765400);
-
-        assertEquals((int)(1.08*1765400), resultado);
+    @Test
+    void calcularDescuentoPorLecheTest(){
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        PlanillaEntity planilla = new PlanillaEntity();
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionLeche(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        int resultado = planillaDescuentosService.calcularDescuentoPorLeche();
+        int valorEsperado = 700; // 10000 * 0.07
+        assertEquals(valorEsperado, resultado);
     }
-
-    @Test // Con pago anterior
-    void setDescuentosTest1(){
-        PagoEntity pago1 = new PagoEntity();
-        pago1.setNombre("Armin van Buuren");
-        pago1.setCodigo("1013");
-        pago1.setCategoria("A");
-        pago1.setComparado(0);
-        pago1.setTotalKlsLeche(1820);
-        pago1.setPorGrasa(72);
-        pago1.setPorSolidos(70);
-
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setNombre("Armin van Buuren");
-        pago2.setCodigo("1013");
-        pago2.setCategoria("A");
-        pago2.setComparado(0);
-        pago2.setTotalKlsLeche(1200);
-        pago2.setPorGrasa(37);
-        pago2.setPorSolidos(31);
-        pago2.setPagoAcopio(1134000);
-
-        pago1 = pagoService.setVariaciones(pago2, pago1);
-        pago1 = pagoService.setDescuentos(pago2, pago1);
-
-        assertEquals(170100, pago1.getDctoVariacionLeche());
-        assertEquals(226800, pago1.getDctoVariacionGrasa());
-        assertEquals(510300, pago1.getDctoVariacionSolidos());
+    @Test
+    void setDescuentosSinPagoAnteriorTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        planillaDescuentosService.setPlanilla(planilla);
+        planillaDescuentosService.setDescuentosSinPagoAnterior();
+        assertEquals(0, planilla.getDctoVariacionLeche());
+        assertEquals(0, planilla.getDctoVariacionGrasa());
+        assertEquals(0, planilla.getDctoVariacionSolidos());
     }
+    @Test
+    void obtenerDescuentosConPlanillaAnterior(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionSolidos(20);
+        planilla.setPorVariacionGrasa(20);
+        planilla.setPorVariacionLeche(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        planillaDescuentosService.obtenerDescuentosConPlanillaAnterior();
 
-    @Test // Sin pago anterior
-    void setDescuentosTest2(){
-        PagoEntity pago1 = new PagoEntity();
-        pago1.setComparado(-1);
+        assertEquals(2700, planilla.getDctoVariacionSolidos());
+        assertEquals(1200, planilla.getDctoVariacionGrasa());
+        assertEquals(700, planilla.getDctoVariacionLeche());
+    }
+    @Test
+    void setDescuentosTest(){
+        // Caso 1: Con planilla anterior
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        planillaAnterior.setComparado(0);
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionSolidos(20);
+        planilla.setPorVariacionGrasa(20);
+        planilla.setPorVariacionLeche(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        planillaDescuentosService.setPlanillaAnterior(planillaAnterior);
+
+        planillaDescuentosService.setDescuentos();
+        assertEquals(2700, planilla.getDctoVariacionSolidos());
+        assertEquals(1200, planilla.getDctoVariacionGrasa());
+        assertEquals(700, planilla.getDctoVariacionLeche());
         
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setNombre("Armin van Buuren");
-        pago2.setCodigo("1013");
-        pago2.setCategoria("A");
-        pago2.setComparado(0);
-        pago2.setTotalKlsLeche(1820);
-        pago2.setPorGrasa(72);
-        pago2.setPorSolidos(70);
-        pago2.setPagoAcopio(1765400);
+        // Caso 2: Sin planilla anterior
+        planilla = new PlanillaEntity();
+        planillaAnterior = new PlanillaEntity();
+        planillaAnterior.setComparado(-1);
+        planillaDescuentosService = new PlanillaDescuentosService(planilla, planillaAnterior);
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionSolidos(20);
+        planilla.setPorVariacionGrasa(20);
+        planilla.setPorVariacionLeche(20);
 
-        
-
-        pago1 = pagoService.setVariaciones(pago2, pago1);
-        pago1 = pagoService.setDescuentos(pago2, pago1);
-
-        assertEquals(0, pago1.getDctoVariacionLeche());
-        assertEquals(0, pago1.getDctoVariacionGrasa());
-        assertEquals(0, pago1.getDctoVariacionSolidos());
+        planillaDescuentosService.setDescuentos();
+        assertEquals(0, planilla.getDctoVariacionSolidos());
+        assertEquals(0, planilla.getDctoVariacionGrasa());
+        assertEquals(0, planilla.getDctoVariacionLeche());
     }
+    @Test
+    void analizarDescuentosTest(){
+        // Caso 1: Con plantilla anterior
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        planillaAnterior.setComparado(0);
+        PlanillaDescuentosService planillaDescuentosService = new PlanillaDescuentosService();
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionSolidos(20);
+        planilla.setPorVariacionGrasa(20);
+        planilla.setPorVariacionLeche(20);
+        planillaDescuentosService.setPlanilla(planilla);
+        planillaDescuentosService.setPlanillaAnterior(planillaAnterior);
 
-    @Test // Sin retencion
-    void setPagosTest1(){
-        PagoEntity pago1 = new PagoEntity();
-        pago1.setNombre("Armin van Buuren");
-        pago1.setCodigo("1013");
-        pago1.setCategoria("A");
-        pago1.setComparado(0);
-        pago1.setTotalKlsLeche(1820);
-        pago1.setPorGrasa(72);
-        pago1.setPorSolidos(70);
+        planillaDescuentosService.analizarDescuentos();
+        assertEquals(2700, planilla.getDctoVariacionSolidos());
+        assertEquals(1200, planilla.getDctoVariacionGrasa());
+        assertEquals(700, planilla.getDctoVariacionLeche());
 
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setNombre("Armin van Buuren");
-        pago2.setCodigo("1013");
-        pago2.setCategoria("A");
-        pago2.setComparado(0);
-        pago2.setTotalKlsLeche(1200);
-        pago2.setPorGrasa(37);
-        pago2.setPorSolidos(31);
-        pago2.setPagoAcopio(1134000);
+        // Caso 2: Sin planilla anterior
+        planilla = new PlanillaEntity();
+        planillaAnterior = new PlanillaEntity();
+        planillaAnterior.setComparado(-1);
+        planillaDescuentosService = new PlanillaDescuentosService(planilla, planillaAnterior);
+        planilla.setPagoAcopio(10000);
+        planilla.setPorVariacionSolidos(20);
+        planilla.setPorVariacionGrasa(20);
+        planilla.setPorVariacionLeche(20);
 
-        pago2 = pagoService.setVariaciones(pago2, pago1);
-        pago2 = pagoService.setDescuentos(pago2, pago1);
-
-        pago2 = pagoService.setPagos(pago2);
-        
-        assertEquals(226800, pago2.getPagoTotal());
-        assertEquals(226800, pago2.getPagoFinal());
+        planillaDescuentosService.analizarDescuentos();
+        assertEquals(0, planilla.getDctoVariacionSolidos());
+        assertEquals(0, planilla.getDctoVariacionGrasa());
+        assertEquals(0, planilla.getDctoVariacionLeche());
     }
+    // Tests PlanillaPagosService
+    @Test
+    void actualizarPlanillaTest2(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        PlanillaEntity planillaNueva = new PlanillaEntity();
+        planilla.setComparado(0);
+        planillaNueva.setComparado(-1);
 
-    @Test // Con retencion
-    void setPagosTest2(){
-        PagoEntity pago1 = new PagoEntity();
-        pago1.setNombre("Armin van Buuren");
-        pago1.setCodigo("1013");
-        pago1.setCategoria("A");
-        pago1.setComparado(0);
-        pago1.setTotalKlsLeche(1820);
-        pago1.setPorGrasa(72);
-        pago1.setPorSolidos(70);
-        pago1.setPagoAcopio(1765400);
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
+        planillaPagosService.actualizarPlanilla(planillaNueva);
 
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setComparado(-1);
-
-        pago1 = pagoService.setVariaciones(pago1, pago2);
-        pago1 = pagoService.setDescuentos(pago1, pago2);
-
-        pago1 = pagoService.setPagos(pago1);
-
-        assertEquals(1765400, pago1.getPagoTotal());
-        assertEquals(229502, pago1.getMontoRetencion());
-        assertEquals(1535898, pago1.getPagoFinal());
+        assertEquals(-1, planillaPagosService.getPlanilla().getComparado());
     }
-
-    @Test // Pago correspondiente mayor a 0
-    void pagoTotalTest1(){
-        PagoEntity pago1 = new PagoEntity();
-        pago1.setNombre("Armin van Buuren");
-        pago1.setCodigo("1013");
-        pago1.setCategoria("A");
-        pago1.setComparado(0);
-        pago1.setTotalKlsLeche(1820);
-        pago1.setPorGrasa(72);
-        pago1.setPorSolidos(70);
-
-        PagoEntity pago2 = new PagoEntity();
-        pago2.setNombre("Armin van Buuren");
-        pago2.setCodigo("1013");
-        pago2.setCategoria("A");
-        pago2.setComparado(0);
-        pago2.setTotalKlsLeche(1200);
-        pago2.setPorGrasa(37);
-        pago2.setPorSolidos(31);
-        pago2.setPagoAcopio(1134000);
-
-        pago1 = pagoService.setVariaciones(pago2, pago1);
-        pago1 = pagoService.setDescuentos(pago2, pago1);
-
-        int resultado = pagoService.pagoTotal(pago1);
-
-        assertEquals(226800, resultado);
+    @Test
+    void pagoPorSolidosTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int resultado;
+        planilla.setPorSolidos(5);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorSolidos();
+        assertEquals(-130, resultado);
+        planilla.setPorSolidos(15);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorSolidos();
+        assertEquals(-90, resultado);
+        planilla.setPorSolidos(30);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorSolidos();
+        assertEquals(95, resultado);
+        planilla.setPorSolidos(36);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorSolidos();
+        assertEquals(150, resultado);
     }
+    @Test
+    void pagoPorGrasaTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int resultado;
+        planilla.setPorGrasa(10);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorGrasa();
+        assertEquals(30, resultado);
+        planilla.setPorGrasa(30);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorGrasa();
+        assertEquals(80, resultado);
+        planilla.setPorGrasa(46);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorGrasa();
+        assertEquals(120, resultado);
+    }
+    @Test
+    void pagoPorCategoriaTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int resultado;
+        planilla.setCategoria("A");
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorCategoria();
+        assertEquals(700, resultado);
 
-    @Test // Pago correspondiente menor a 0
-    void pagoTotalTest2(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
+        planilla.setCategoria("B");
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorCategoria();
+        assertEquals(550, resultado);
 
-        pago.setDctoVariacionLeche(210100);
-        pago.setDctoVariacionGrasa(276800);
-        pago.setDctoVariacionSolidos(560300);
+        planilla.setCategoria("C");
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorCategoria();
+        assertEquals(400, resultado);
 
-        int resultado = pagoService.pagoTotal(pago);
+        planilla.setCategoria("D");
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorCategoria();
+        planilla.setCategoria("");
 
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.pagoPorCategoria();
         assertEquals(0, resultado);
     }
-
     @Test
-    void montoRetencionTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
+    void multiplicadorBonoFrecuencia(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        double resultado;
         
-        pago.setPagoTotal(1765400);
-        int resultado = pagoService.montoRetencion(pago);
-
-        assertEquals(229502, resultado);
-    }
-
-    @Test // Pago final mayor a 0
-    void pagoFinalTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
+        planilla.setQueTurnos(3);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.multiplicadorBonoFrecuencia();
+        assertEquals(1.20, resultado);
         
-        pago.setPagoTotal(1765400);
-        pago.setMontoRetencion(229502);
-        int resultado = pagoService.pagoFinal(pago);
-
-        assertEquals(1535898, resultado);
-    }
-
-    @Test // Pago final menor a 0
-    void pagoFinalTest2(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1820);
-        pago.setPorGrasa(72);
-        pago.setPorSolidos(70);
+        planilla.setQueTurnos(2);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.multiplicadorBonoFrecuencia();
+        assertEquals(1.12, resultado);
         
-        pago.setPagoTotal(1765400);
-        pago.setMontoRetencion(1775400);
-        int resultado = pagoService.pagoFinal(pago);
+        planilla.setQueTurnos(1);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.multiplicadorBonoFrecuencia();
+        assertEquals(1.08, resultado);
 
+        planilla.setQueTurnos(4);
+        planillaPagosService.setPlanilla(planilla);
+        resultado = planillaPagosService.multiplicadorBonoFrecuencia();
         assertEquals(0, resultado);
     }
-
     @Test
-    void calcularDescuentoPorLecheTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1200);
-        pago.setPorGrasa(37);
-        pago.setPorSolidos(31);
-        pago.setPagoAcopio(1134000);
+    void calcularBonoFrecuenciaTest(){
+        int pagoPorAcopio = 10000;
+        int frecuencia = 3;
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        planilla.setQueTurnos(frecuencia);
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
+        
+        planillaPagosService.calcularBonoFrecuencia(pagoPorAcopio);
 
-        pago.setPorVariacionLeche(34);
-        int resultado = pagoService.calcularDescuentoPorLeche(pago);
-        assertEquals(170100, resultado);
+        assertEquals(2000, planilla.getBonoFrecuencia());
     }
-
     @Test
-    void calcularDescuentoPorGrasaTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1200);
-        pago.setPorGrasa(37);
-        pago.setPorSolidos(31);
-        pago.setPagoAcopio(1134000);
+    void setBonoFrecuienciaTest(){
+        int bono = 20000;
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
 
-        pago.setPorVariacionGrasa(35);
-        int resultado = pagoService.calcularDescuentoPorGrasa(pago);
-        assertEquals(226800, resultado);
+        planillaPagosService.setBonoFrecuencia(bono);
+
+        assertEquals(bono, planillaPagosService.getPlanilla().getBonoFrecuencia());
     }
-
     @Test
-    void calcularDescuentoPorSolidosTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("1013");
-        pago.setCategoria("A");
-        pago.setComparado(0);
-        pago.setTotalKlsLeche(1200);
-        pago.setPorGrasa(37);
-        pago.setPorSolidos(31);
-        pago.setPagoAcopio(1134000);
+    void setPagoAcopioTest(){
+        int pago = 20000;
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
 
-        pago.setPorVariacionSolidos(39);
-        int resultado = pagoService.calcularDescuentoPorSolidos(pago);
-        assertEquals(510300, resultado);
+        planillaPagosService.setPagoAcopio(pago);
+
+        assertEquals(pago, planillaPagosService.getPlanilla().getPagoAcopio());
     }
-
     @Test
-    void descuentoPorLecheTest1(){
-        float porc1 = 5;
-        float porc2 = 15;
-        float porc3 = 35;
-        float porc4 = 55;
-        float porc5 = -20;
+    void calcularPagoAcopio(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        int totalKlsLeche = 1000;
+        String categoria = "A";
+        int porGrasa = 10;
+        int porSolidos = 10;
+        int queTurnos = 3;
+        planilla.setTotalKlsLeche(totalKlsLeche);
+        planilla.setCategoria(categoria);
+        planilla.setPorGrasa(porGrasa);
+        planilla.setPorSolidos(porSolidos);
+        planilla.setQueTurnos(queTurnos);
 
-        assertEquals(0, pagoService.descuentoPorLeche(porc1));
-        assertEquals(0.07, pagoService.descuentoPorLeche(porc2));
-        assertEquals(0.15, pagoService.descuentoPorLeche(porc3));
-        assertEquals(0.30, pagoService.descuentoPorLeche(porc4));
-        assertEquals(0, pagoService.descuentoPorLeche(porc5));
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
+        planillaPagosService.calcularPagoAcopio();
+
+        assertEquals(768000, planillaPagosService.getPlanilla().getPagoAcopio());
     }
-
     @Test
-    void descuentoPorGrasaTest1(){
-        int porc1 = 10;
-        int porc2 = 20;
-        int porc3 = 30;
-        int porc4 = 50;
-        int porc5 = -20;
+    void calculoPagoTotalTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int pagoAcopio;
+        int dctoLeche;
+        int dctoGrasa;
+        int dctoSolidos;
 
-        assertEquals(0, pagoService.descuentoPorGrasa(porc1));
-        assertEquals(0.12, pagoService.descuentoPorGrasa(porc2));
-        assertEquals(0.20, pagoService.descuentoPorGrasa(porc3));
-        assertEquals(0.30, pagoService.descuentoPorGrasa(porc4));
-        assertEquals(0, pagoService.descuentoPorGrasa(porc5));
+        // Caso 1: resultado mayor a 0
+        pagoAcopio = 1000;
+        dctoLeche = 100;
+        dctoGrasa = 100;
+        dctoSolidos = 100;
+        planilla.setPagoAcopio(pagoAcopio);
+        planilla.setDctoVariacionLeche(dctoLeche);
+        planilla.setDctoVariacionGrasa(dctoGrasa);
+        planilla.setDctoVariacionSolidos(dctoSolidos);
+        planillaPagosService.setPlanilla(planilla);
+        assertEquals(700, planillaPagosService.calculoPagoTotal());
+
+        // Caso 2: resultado menor a 0
+        pagoAcopio = 1000;
+        dctoLeche = 1000;
+        dctoGrasa = 1000;
+        dctoSolidos = 1000;
+        planilla.setPagoAcopio(pagoAcopio);
+        planilla.setDctoVariacionLeche(dctoLeche);
+        planilla.setDctoVariacionGrasa(dctoGrasa);
+        planilla.setDctoVariacionSolidos(dctoSolidos);
+        planillaPagosService.setPlanilla(planilla);
+        assertEquals(0, planillaPagosService.calculoPagoTotal());
     }
-    
     @Test
-    void descuentoPorSolidosTest1(){
-        int porc1 = 5;
-        int porc2 = 10;
-        int porc3 = 20;
-        int porc4 = 45;
-        int porc5 = -20;
+    void setPagoTotalTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int pagoAcopio = 1000;
+        int dctoLeche = 100;
+        int dctoGrasa = 100;
+        int dctoSolidos = 100;
 
-        assertEquals(0, pagoService.descuentoPorSolidos(porc1));
-        assertEquals(0.18, pagoService.descuentoPorSolidos(porc2));
-        assertEquals(0.27, pagoService.descuentoPorSolidos(porc3));
-        assertEquals(0.45, pagoService.descuentoPorSolidos(porc4));
-        assertEquals(0, pagoService.descuentoPorSolidos(porc5));
+        planilla.setPagoAcopio(pagoAcopio);
+        planilla.setDctoVariacionLeche(dctoLeche);
+        planilla.setDctoVariacionGrasa(dctoGrasa);
+        planilla.setDctoVariacionSolidos(dctoSolidos);
+        planillaPagosService.setPlanilla(planilla);
+
+        planillaPagosService.setPagoTotal();
+        assertEquals(700, planillaPagosService.getPlanilla().getPagoTotal());
     }
-
     @Test
-    void calcularVariacionLecheTest1(){
-        int datoAnterior = 1820;
-        int datoActual = 1200;
+    void calculoMontoRetencionTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int pagoTotal = 10000;
+        planilla.setPagoTotal(pagoTotal);
 
-        int resultado = (int)pagoService.calcularVariacionLeche(datoAnterior, datoActual);
-        assertEquals(34, resultado);
+        planillaPagosService.setPlanilla(planilla);
+        int retencion = planillaPagosService.calculoMontoRetencion();
+
+        assertEquals(pagoTotal*0.13, retencion);
     }
-
-    @Test 
-    void calcularVariacionPorcentajeTest1(){
-        int datoAnterior = 72;
-        int datoActual = 37;
-
-        int resultado = pagoService.calcularVariacionPorcentaje(datoAnterior, datoActual);
-        assertEquals(35, resultado);
-    }
-    
     @Test
-    void guardarPagoTest1(){
-        PagoEntity pago = new PagoEntity();
-        pagoService.guardarPago(pago);
-        ArrayList<PagoEntity> pagos = pagoService.obtenerPagos();
-        assertEquals(1, pagos.size());
-        pagoRepository.delete(pago);
+    void setMontoRetencionTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int pagoTotal;
+
+        // Caso 1: pagoTotal mayor a 950000
+        pagoTotal = 960000;
+        planilla.setPagoTotal(pagoTotal);
+        planillaPagosService.setPlanilla(planilla);
+        planillaPagosService.setMontoRetencion();
+
+        assertEquals(pagoTotal*0.13, planillaPagosService.getPlanilla().getMontoRetencion());
+        
+        // Caso 2: pagoTotal menor a 950000
+        pagoTotal = 940000;
+        planilla.setPagoTotal(pagoTotal);
+        planillaPagosService.setPlanilla(planilla);
+        planillaPagosService.setMontoRetencion();
+
+        assertEquals(0, planillaPagosService.getPlanilla().getMontoRetencion());
     }
-
     @Test
-    void actualizarPagoTest1(){
-        PagoEntity pago = new PagoEntity();
-        pago.setNombre("Armin van Buuren");
-        pago.setCodigo("10");
-        pago.setComparado(0);
-        pagoService.guardarPago(pago);
+    void calculoPagoFinalTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int pagoTotal = 10000;
+        int montoRetencion = 1000;
+        planilla.setPagoTotal(pagoTotal);
+        planilla.setMontoRetencion(montoRetencion);
 
-        pagoService.actualizarPago(pago);
+        planillaPagosService.setPlanilla(planilla);
+        int pagoFinal = planillaPagosService.calculoPagoFinal();
 
-        PagoEntity pagoTest = pagoService.obtenerPagosPorProveedor("10");
-        assertEquals(-1, pagoTest.getComparado());
-        pagoRepository.delete(pago);
+        assertEquals(pagoTotal-montoRetencion, pagoFinal);
+    }
+    @Test
+    void setPagoFinalTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService();
+        int pagoTotal = 10000;
+        int montoRetencion = 1000;
+        planilla.setPagoTotal(pagoTotal);
+        planilla.setMontoRetencion(montoRetencion);
+
+        planillaPagosService.setPlanilla(planilla);
+        planillaPagosService.setPagoFinal();
+
+        assertEquals(pagoTotal-montoRetencion, planillaPagosService.getPlanilla().getPagoFinal());
+    }
+    @Test
+    void analizarPagosTest(){
+        PlanillaEntity planilla = new PlanillaEntity();
+        PlanillaEntity planillaAnterior = new PlanillaEntity();
+        int totalKlsLeche = 1000;
+        String categoria = "A";
+        int porGrasa = 10;
+        int porSolidos = 10;
+        int queTurnos = 3;
+        planilla.setTotalKlsLeche(totalKlsLeche);
+        planilla.setCategoria(categoria);
+        planilla.setPorGrasa(porGrasa);
+        planilla.setPorSolidos(porSolidos);
+        planilla.setQueTurnos(queTurnos);
+
+        PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
+        planillaPagosService.analizarPagos();
+
+        assertEquals(768000, planillaPagosService.getPlanilla().getPagoAcopio());
+        assertEquals(768000, planillaPagosService.getPlanilla().getPagoTotal());
+        assertEquals(0, planillaPagosService.getPlanilla().getMontoRetencion());
+        assertEquals(768000, planillaPagosService.getPlanilla().getPagoFinal());
     }
 }

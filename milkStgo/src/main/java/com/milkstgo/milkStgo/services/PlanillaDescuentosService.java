@@ -1,10 +1,18 @@
 package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.PlanillaEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@NoArgsConstructor
 @Getter
-public class PlanillaDescuentos {
+@Setter
+@Service
+public class PlanillaDescuentosService {
     private static final double VARIACION_INSIGNIFICANTE = 0;
     private static final double DCTO_VARIACION_LECHE_BAJA = 0.07;
     private static final double DCTO_VARIACION_LECHE_MEDIA = 0.15;
@@ -16,11 +24,12 @@ public class PlanillaDescuentos {
     private static final double DCTO_VARIACION_SOLIDOS_MEDIA = 0.27;
     private static final double DCTO_VARIACION_SOLIDOS_ALTA = 0.45;
 
-    private PlanillaService planillaService = new PlanillaService();
+    //@Autowired
+    //PlanillaService planillaService;
     private PlanillaEntity planilla;
     private PlanillaEntity planillaAnterior;
 
-    public PlanillaDescuentos(PlanillaEntity planilla, PlanillaEntity planillaAnterior){
+    public PlanillaDescuentosService(PlanillaEntity planilla, PlanillaEntity planillaAnterior){
         this.planilla = planilla;
         this.planillaAnterior = planillaAnterior;
     }
@@ -29,6 +38,7 @@ public class PlanillaDescuentos {
     }
 
     public void setDescuentos(){
+        PlanillaService planillaService = new PlanillaService();
         if(planillaService.esLaPlanillaAnterior(planillaAnterior))
             obtenerDescuentosConPlanillaAnterior();
         else
@@ -49,17 +59,14 @@ public class PlanillaDescuentos {
         planilla.setDctoVariacionSolidos(0);
     }
     public int calcularDescuentoPorLeche(){
-        float porcentajeVariacionLeche = planilla.getPorVariacionLeche();
         double porcentajeDescuento = descuentoPorLeche();
         return (int) (planilla.getPagoAcopio() * porcentajeDescuento);
     }
     public int calcularDescuentoPorGrasa(){
-        float porcentajeVariacionGrasa = planilla.getPorVariacionGrasa();
         double porcentajeDescuento = descuentoPorGrasa();
         return (int) (planilla.getPagoAcopio() * porcentajeDescuento);
     }
     public int calcularDescuentoPorSolidos(){
-        float porcentajeVariacionSolidos = planilla.getPorVariacionSolidos();
         double porcentajeDescuento = descuentoPorSolidos();
         return (int) (planilla.getPagoAcopio() * porcentajeDescuento);
     }

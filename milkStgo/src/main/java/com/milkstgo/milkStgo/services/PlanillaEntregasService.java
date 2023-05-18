@@ -5,6 +5,8 @@ import com.milkstgo.milkStgo.entities.PlanillaEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
@@ -13,7 +15,9 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PlanillaEntregas {
+@Setter
+@Service
+public class PlanillaEntregasService {
     private static final int ENTREGA_AMBOS_TURNOS = 3;
     private static final int ENTREGA_SOLO_MANANA = 2;
     private static final int ENTREGA_SOLO_TARDE = 1;
@@ -26,7 +30,7 @@ public class PlanillaEntregas {
     private int turnoTarde = 0;
     private int queTurnos= 0;
 
-    public PlanillaEntregas(PlanillaEntity planilla){
+    public PlanillaEntregasService(PlanillaEntity planilla){
         this.planilla = planilla;
     }
     public void analizarAcopios(ArrayList<AcopioEntity> acopiosProveedor){

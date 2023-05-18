@@ -5,6 +5,8 @@ import com.milkstgo.milkStgo.entities.DatosEntity;
 import com.milkstgo.milkStgo.entities.PlanillaEntity;
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
 import com.milkstgo.milkStgo.repositories.PlanillaRepository;
+import lombok.Generated;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 @Service
+@Getter
 public class PlanillaService {
     private static final int PLANILLA_ANTERIOR = 0;
     private PlanillaEntity planilla;
@@ -24,11 +27,20 @@ public class PlanillaService {
     DatosService datosService;
     @Autowired
     PlanillaRepository planillaRepository;
+    @Autowired
+    PlanillaDescuentosService planillaDescuentosService;
+    @Autowired
+    PlanillaEntregasService planillaEntregasService;
+    @Autowired
+    PlanillaPorcentajesService planillaPorcentajesService;
+    @Autowired
+    PlanillaPagosService planillaPagosService;
 
     public PlanillaService(){
         this.planilla = new PlanillaEntity();
     }
 
+    @Generated
     public void crearPlanilla(){
         ArrayList<ProveedorEntity> proveedoresExistentes;
         ArrayList<AcopioEntity> acopiosProveedor;
@@ -39,9 +51,10 @@ public class PlanillaService {
             String codigoProveedor = proveedor.getCodigo();
 
             acopiosProveedor = acopioService.obtenerAcopiosPorProveedor(codigoProveedor);
-            datosProveedor = datosService.obtenerDataPorProveedor(codigoProveedor);
-            if(tieneAcopios(acopiosProveedor))
+            if(tieneAcopios(acopiosProveedor)) {
+                datosProveedor = datosService.obtenerDataPorProveedor(codigoProveedor);
                 crearPagoPorProveedor(proveedor, acopiosProveedor, datosProveedor);
+            }
             reiniciarPlanilla();
         }
         acopioService.eliminarAcopios();
@@ -51,6 +64,8 @@ public class PlanillaService {
     public boolean tieneAcopios(ArrayList<AcopioEntity> acopios){
         return (acopios.size() != 0);
     }
+
+    @Generated
     public void crearPagoPorProveedor(ProveedorEntity proveedor, ArrayList<AcopioEntity> acopios, DatosEntity datos){
         String codigoProveedor = proveedor.getCodigo();
         PlanillaEntity planillaAnterior = obtenerPlanillaAnteriorProveedor(codigoProveedor);
@@ -78,22 +93,25 @@ public class PlanillaService {
         planilla.setComparado(valorNoComparado);
         planilla.setFecha(fechaActual);
     }
+    @Generated
     public void setInfoPagos(){
         PlanillaEntity planillaAnterior = obtenerPlanillaAnteriorProveedor(this.planilla.getCodigo());
-        PlanillaPagos planillaPagos = new PlanillaPagos(planilla, planillaAnterior);
-        planillaPagos.analizarPagos();
-        actualizarPlanilla(planillaPagos.getPlanilla());
+        planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
+        planillaPagosService.analizarPagos();
+        actualizarPlanilla(planillaPagosService.getPlanilla());
     }
+    @Generated
     public void setInfoPorcentajes(DatosEntity datosProveedor){
         PlanillaEntity planillaAnterior = obtenerPlanillaAnteriorProveedor(this.planilla.getCodigo());
-        PlanillaPorcentajes planillaPorcentajes = new PlanillaPorcentajes(this.planilla, planillaAnterior, datosProveedor);
-        planillaPorcentajes.analizarDatos();
-        actualizarPlanilla(planillaPorcentajes.getPlanilla());
+        planillaPorcentajesService = new PlanillaPorcentajesService(this.planilla, planillaAnterior, datosProveedor);
+        planillaPorcentajesService.analizarDatos();
+        actualizarPlanilla(planillaPorcentajesService.getPlanilla());
     }
+    @Generated
     public void setInfoEntregas(ArrayList<AcopioEntity> acopiosProveedor){
-        PlanillaEntregas planillaEntregas = new PlanillaEntregas(this.planilla);
-        planillaEntregas.analizarAcopios(acopiosProveedor);
-        actualizarPlanilla(planillaEntregas.getPlanilla());
+        planillaEntregasService = new PlanillaEntregasService(this.planilla);
+        planillaEntregasService.analizarAcopios(acopiosProveedor);
+        actualizarPlanilla(planillaEntregasService.getPlanilla());
     }
     public void setInfoProveedor(ProveedorEntity proveedor){
         planilla.setNombre(proveedor.getNombre());
@@ -109,9 +127,6 @@ public class PlanillaService {
 
     public ArrayList<PlanillaEntity> obtenerPlanillas(){
         return (ArrayList<PlanillaEntity>) planillaRepository.findAll();
-    }
-    public ArrayList<PlanillaEntity> obtenerPlanillasPorProveedor(String codigoProveedor){
-        return planillaRepository.obtenerPlanillasPorProveedor(codigoProveedor);
     }
     public PlanillaEntity obtenerPlanillaAnteriorProveedor(String codigoProveedor){
         ArrayList<PlanillaEntity> planillaAnteriorTemp = planillaRepository.obtenerPlanillaAnteriorProveedor(codigoProveedor);

@@ -1,10 +1,16 @@
 package com.milkstgo.milkStgo.services;
 
 import com.milkstgo.milkStgo.entities.PlanillaEntity;
-import lombok.Getter;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class PlanillaPagos {
+@Setter
+@Service
+public class PlanillaPagosService {
     private static final int PAGO_PORCENTAJE_INICIAL = 0;
     private static final int FRECUENCIA_MINIMA_BONO = 10;
     private static final int ENTREGA_AMBOS_TURNOS = 3;
@@ -17,20 +23,23 @@ public class PlanillaPagos {
     private static final int PAGO_CATEGORIA_B = 550;
     private static final int PAGO_CATEGORIA_C = 400;
     private static final int PAGO_CATEGORIA_D = 250;
-    private static final int PAGO_SOLIDOS_MUY_BAJOS = -130;
     private static final int PAGO_GRASA_BAJA = 30;
     private static final int PAGO_GRASA_MEDIA = 80;
     private static final int PAGO_GRASA_ALTA = 120;
+    private static final int PAGO_SOLIDOS_MUY_BAJOS = -130;
     private static final int PAGO_SOLIDOS_BAJOS = -90;
     private static final int PAGO_SOLIDOS_NORMALES = 95;
     private static final int PAGO_SOLIDOS_ALTOS = 150;
     private static final double MONTO_MAXIMO_RETENCION = 950000;
     private static final double RETENCION = 0.13;
 
+    @Autowired
+    PlanillaDescuentosService planillaDescuentosService;
+
     private PlanillaEntity planilla;
     private PlanillaEntity planillaAnterior;
 
-    public PlanillaPagos(PlanillaEntity planilla, PlanillaEntity planillaAnterior) {
+    public PlanillaPagosService(PlanillaEntity planilla, PlanillaEntity planillaAnterior) {
         this.planilla = planilla;
         this.planillaAnterior = planillaAnterior;
     }
@@ -77,10 +86,11 @@ public class PlanillaPagos {
             resultado = 0;
         return resultado;
     }
+    @Generated // Metodos ya testeados
     public void setInfoDescuentos(){
-        PlanillaDescuentos planillaDescuentos = new PlanillaDescuentos(this.planilla, this.planillaAnterior);
-        planillaDescuentos.analizarDescuentos();
-        actualizarPlanilla(planillaDescuentos.getPlanilla());
+        planillaDescuentosService = new PlanillaDescuentosService(this.planilla, this.planillaAnterior);
+        planillaDescuentosService.analizarDescuentos();
+        actualizarPlanilla(planillaDescuentosService.getPlanilla());
     }
     public void calcularPagoAcopio(){
         int klsLecheTotales = planilla.getTotalKlsLeche();
