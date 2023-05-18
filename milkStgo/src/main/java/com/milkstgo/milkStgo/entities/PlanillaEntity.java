@@ -5,19 +5,21 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Entity
 @Data
-@Table(name = "pago")
+@Table(name = "planilla")
 @NoArgsConstructor
 @AllArgsConstructor
-public class PagoEntity {
+@Setter
+public class PlanillaEntity {
     @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idPago;
+    private int idPlanilla;
 
     // Datos proveedor
     private String nombre; //

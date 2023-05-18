@@ -104,12 +104,7 @@ public class DatosService {
         guardarData(newDatos);
     }
 
-    public DatosEntity obtenerDataPorProveedor(String proveedor){
-        for (DatosEntity data : datosRepository.findAll()){
-            if (data.getId_proveedor().equals(proveedor)){
-                return data;
-            }
-        }
-        return null;
+    public DatosEntity obtenerDataPorProveedor(String codigoProveedor){
+        return datosRepository.obtenerDatosPorProveedor(codigoProveedor).get(0);
     }
 }

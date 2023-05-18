@@ -2,12 +2,9 @@ package com.milkstgo.milkStgo.controllers;
 
 import com.milkstgo.milkStgo.entities.AcopioEntity;
 import com.milkstgo.milkStgo.entities.DatosEntity;
-import com.milkstgo.milkStgo.entities.PagoEntity;
+import com.milkstgo.milkStgo.entities.PlanillaEntity;
 import com.milkstgo.milkStgo.entities.ProveedorEntity;
-import com.milkstgo.milkStgo.services.AcopioService;
-import com.milkstgo.milkStgo.services.DatosService;
-import com.milkstgo.milkStgo.services.PagoService;
-import com.milkstgo.milkStgo.services.ProveedorService;
+import com.milkstgo.milkStgo.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +19,7 @@ public class HomeController {
     @Autowired
     ProveedorService proveedorService;
     @Autowired
-    PagoService pagoService;
+    PlanillaService planillaService;
     @Autowired
     AcopioService acopioService;
     @Autowired
@@ -31,11 +28,11 @@ public class HomeController {
     @GetMapping("/")
     public String main(Model model){
         ArrayList<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
-        ArrayList<PagoEntity> pagos = pagoService.obtenerPagos();
+        ArrayList<PlanillaEntity> planillas = planillaService.obtenerPlanillas();
         ArrayList<AcopioEntity> acopios = acopioService.obtenerData();
         ArrayList<DatosEntity> datos = datosService.obtenerData();
         model.addAttribute("proveedores", proveedores);
-        model.addAttribute("pagos", pagos);
+        model.addAttribute("planillas", planillas);
         model.addAttribute("acopios", acopios);
         model.addAttribute("datos", datos);
         return "main";
