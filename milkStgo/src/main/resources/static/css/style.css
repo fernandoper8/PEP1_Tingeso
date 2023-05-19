@@ -19,11 +19,13 @@ body{
     background-color: #02377c;
     border-color: #02377c;
     color: white;
-    transform: translateY(-5px);
+    transform: scale(1.1);
+    transition: 0.2s;
 }
 
 .btn:active{
-    transition: background-color 0.25s;
+    transform: scale(0.9);
+    transition: background-color 0.25s, transform 0.1s;
 }
 
 /* Para cards */
