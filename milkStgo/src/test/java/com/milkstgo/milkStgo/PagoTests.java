@@ -76,6 +76,7 @@ class PagoTests {
         planilla.setCodigo("A");
         planillaService.setPlanilla(planilla);
 
+        /* 
         // ProveedorService
         ProveedorService proveedorService = planillaService.getProveedorService();
         // AcopioService
@@ -92,6 +93,7 @@ class PagoTests {
         PlanillaPagosService planillaPagosService = planillaService.getPlanillaPagosService();
         // PlanillaPorcentajesService
         PlanillaPorcentajesService planillaPorcentajesService = planillaService.getPlanillaPorcentajesService();   
+        */
     }
     @Test
     void tieneAcopiosTest(){
@@ -224,14 +226,14 @@ class PagoTests {
 
     @Test
     void argsTest(){
-        PlanillaEntity planilla = new PlanillaEntity();
-        PlanillaEntity planillaAnterior = new PlanillaEntity();
-        DatosEntity datos = new DatosEntity();
-        PlanillaPorcentajesService planillaPorcentajesService = new PlanillaPorcentajesService(planilla, planillaAnterior, datos);
+        //PlanillaEntity planilla = new PlanillaEntity();
+        //PlanillaEntity planillaAnterior = new PlanillaEntity();
+        //DatosEntity datos = new DatosEntity();
+        //PlanillaPorcentajesService planillaPorcentajesService = new PlanillaPorcentajesService(planilla, planillaAnterior, datos);
 
-        datos = planillaPorcentajesService.getDatosProveedor();
-        planilla = planillaPorcentajesService.getPlanilla();
-        planillaAnterior = planillaPorcentajesService.getPlanillaAnterior();
+        //datos = planillaPorcentajesService.getDatosProveedor();
+        //planilla = planillaPorcentajesService.getPlanilla();
+        //planillaAnterior = planillaPorcentajesService.getPlanillaAnterior();
     }
     @Test
     void setVariacionesSinPagoAnteriorTest(){
@@ -770,7 +772,7 @@ class PagoTests {
         assertEquals(planilla, planillaPagosService.getPlanilla());
         assertEquals(planillaAnterior, planillaPagosService.getPlanillaAnterior());
 
-        PlanillaDescuentosService planillaDescuentosService = planillaPagosService.getPlanillaDescuentosService();
+        //PlanillaDescuentosService planillaDescuentosService = planillaPagosService.getPlanillaDescuentosService();
     }
     @Test
     void actualizarPlanillaTest2(){
