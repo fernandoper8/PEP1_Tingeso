@@ -77,9 +77,8 @@ public class DatosService {
                 }
             }
             texto = temp;
-            System.out.println("Archivo leido exitosamente");
         }catch(Exception e){
-            System.err.println("No se encontro el archivo");
+            logg.error("ERROR", e);
         }finally{
             if(bf != null){
                 try{

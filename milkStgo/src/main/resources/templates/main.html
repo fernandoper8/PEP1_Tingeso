@@ -18,92 +18,85 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg bs-side-navbar">
-        <a class="navbar-brand" href="/"><b>milkStgo</b></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link item" href="/">Menú Principal</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link item" href="/proveedores">Proveedores</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link item" href="/archivos">Subir Archivos</a>
-                </li>
-                <th:block th:if="${!planillas.isEmpty()}">
-                    <li class="nav-item">
-                        <a class="nav-link item" href="/planilla">Ver Pagos</a>
-                    </li>
-                </th:block>
-            </ul>
+    <nav class="navbar">
+        <div class="nav-item">
+            <a href="/">Menú Principal</a>
         </div>
+        <div class="nav-item">
+            <a href="/proveedores">Proveedores</a>
+        </div>
+        <div class="nav-item">
+            <a href="/"><strong>milkStgo</strong></a>
+        </div>
+        <div class="nav-item">
+            <a href="/archivos">Subir Archivos</a>
+        </div>
+        <th:block th:if="${!planillas.isEmpty()}">
+            <div class="nav-item">
+                <a href="/planilla">Ver Pagos</a>
+            </div>
+        </th:block>
     </nav>
-    
+
     <div class="container principal my-5">
         <div class="row">
             <div class="col">
-                <!--Colocar logo mas adelante o en el navbar-->
-                <h1 class="text-center mb-5"><b>milkStgo</b></h1>
+                <h1 class="titulo mb-5"><b>Menú Principal</b></h1>
             </div>
-        <div class="row justify-content-center">
-            <div class="col-5">
-                <div class="card border-black">
-                    <div class="card-header border-black">
-                        Proveedores
+            <div class="row justify-content-center">
+                <div class="col-5">
+                    <div class="card border-black">
+                        <div class="card-header border-black">
+                            Proveedores
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Ingresa y visualiza los proveedores</h5>
+                            <p class="card-text">Revisa quienes son los proveedores actuales de milkStgo</p>
+                            <a href="/proveedores"><button class="btn">Acceder</button></a>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Ingresa y visualiza los proveedores</h5>
-                        <p class="card-text">Revisa quienes son los proveedores actuales de milkStgo</p>
-                        <a href="/proveedores"><button class="btn">Acceder</button></a>
+                </div>
+                <div class="col-5">
+                    <div class="card border-black">
+                        <div class="card-header border-black">
+                            Subida de Archivos
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Carga los datos y el acopio</h5>
+                            <p class="card-text">Ingresa los archivos .csv con los datos correspondientes</p>
+                            <a href="/archivos"><button class="btn">Acceder</button></a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-5">
-                <div class="card border-black">
-                    <div class="card-header border-black">
-                      Subida de Archivos
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Carga los datos y el acopio</h5>
-                        <p class="card-text">Ingresa los archivos .csv con los datos correspondientes</p>
-                        <a href="/archivos"><button class="btn">Acceder</button></a>
+
+            <div class="row my-4 justify-content-center">
+                <div class="col-5">
+                    <div class="card border-black">
+                        <div class="card-header border-black">
+                            Pagos
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Genera los pagos y visualiza la planilla</h5>
+                            <p class="card-text">Procura ingresar los archivos .csv antes!</p>
+
+                            <th:block th:if="${!acopios.isEmpty() and !datos.isEmpty()}">
+                                <form th:action="@{/crearPlanilla}" method="POST">
+                                    <button class="btn" type="submit">Generar Pagos</button>
+                                </form>
+                            </th:block>
+
+
+                            <th:block th:if="${!planillas.isEmpty()}">
+                                <a href="/planilla"><button class="btn mt-1">Visualizar Planilla</button></a>
+                            </th:block>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="row my-4 justify-content-center">
-            <div class="col-5">
-                <div class="card border-black">
-                    <div class="card-header border-black">
-                      Pagos
-                    </div>
-                    <div class="card-body">
-                      <h5 class="card-title">Genera los pagos y visualiza la planilla</h5>
-                      <p class="card-text">Procura ingresar los archivos .csv antes!</p>
-
-                      <th:block th:if="${!acopios.isEmpty() and !datos.isEmpty()}">
-                        <form th:action="@{/crearPlanilla}" method="POST">
-                          <button class="btn" type="submit">Generar Pagos</button>
-                        </form>
-                      </th:block>
-                      
-
-                      <th:block th:if="${!planillas.isEmpty()}">
-                        <a href="/planilla"><button class="btn mt-1">Visualizar Planilla</button></a>
-                      </th:block>
-                    </div>
-                  </div>
-            </div>
-        </div>
-
     </div>
+
 </body>
 
 </html>

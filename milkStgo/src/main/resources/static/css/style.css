@@ -6,6 +6,10 @@ body{
 .principal{
     color: white;
 }
+.titulo{
+    text-align: center;
+}
+
 
 /* Para los botones */
 .btn{

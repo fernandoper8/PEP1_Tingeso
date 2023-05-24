@@ -16,31 +16,24 @@
     
 <body>
     
-    <nav class="navbar navbar-expand-lg bs-side-navbar">
-        <a class="navbar-brand" href="/"><b>milkStgo</b></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link item" href="/">Menú Principal</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link item" href="/proveedores">Proveedores</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link item" href="/archivos">Subir Archivos</a>
-                </li>
-                <th:block th:if="${!planillas.isEmpty()}">
-                    <li class="nav-item">
-                        <a class="nav-link item" href="/planilla">Ver Pagos</a>
-                    </li>
-                </th:block>
-            </ul>
+    <nav class="navbar">
+        <div class="nav-item">
+            <a href="/">Menú Principal</a>
         </div>
+        <div class="nav-item">
+            <a href="/proveedores">Proveedores</a>
+        </div>
+        <div class="nav-item">
+            <a href="/"><strong>milkStgo</strong></a>
+        </div>
+        <div class="nav-item">
+            <a href="/archivos">Subir Archivos</a>
+        </div>
+        <th:block th:if="${!planillas.isEmpty()}">
+            <div class="nav-item">
+                <a href="/planilla">Ver Pagos</a>
+            </div>
+        </th:block>
     </nav>
 
     <div class="container my-5">

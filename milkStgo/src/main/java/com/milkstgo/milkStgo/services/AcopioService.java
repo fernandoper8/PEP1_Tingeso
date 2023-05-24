@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AcopioService {
@@ -79,9 +80,8 @@ public class AcopioService {
                 }
             }
             texto = temp;
-            System.out.println("Archivo leido exitosamente");
         }catch(Exception e){
-            System.err.println("No se encontro el archivo");
+            logg.error("ERROR", e);
         }finally{
             if(bf != null){
                 try{
