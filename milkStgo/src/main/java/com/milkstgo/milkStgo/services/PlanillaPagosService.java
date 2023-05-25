@@ -111,7 +111,9 @@ public class PlanillaPagosService {
     }
     public void calcularBonoFrecuencia(int pagoPorAcopio){
         double multiplicadorFrecuencia = multiplicadorBonoFrecuencia();
-        int bono = (int)((pagoPorAcopio*multiplicadorFrecuencia)-pagoPorAcopio);
+        int bono = 0;
+        if(planilla.getFrecuencia() > 10)
+            bono = (int)((pagoPorAcopio*multiplicadorFrecuencia)-pagoPorAcopio);
         setBonoFrecuencia(bono);
     }
     public double multiplicadorBonoFrecuencia(){
