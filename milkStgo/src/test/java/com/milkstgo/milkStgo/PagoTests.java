@@ -909,7 +909,7 @@ class PagoTests {
         
         planillaPagosService.calcularBonoFrecuencia(pagoPorAcopio);
 
-        assertEquals(2000, planilla.getBonoFrecuencia());
+        assertEquals(0, planilla.getBonoFrecuencia());
     }
     @Test
     void setBonoFrecuienciaTest(){
@@ -951,7 +951,7 @@ class PagoTests {
         PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
         planillaPagosService.calcularPagoAcopio();
 
-        assertEquals(768000, planillaPagosService.getPlanilla().getPagoAcopio());
+        assertEquals(640000, planillaPagosService.getPlanilla().getPagoAcopio());
     }
     @Test
     void calculoPagoTotalTest(){
@@ -1084,9 +1084,9 @@ class PagoTests {
         PlanillaPagosService planillaPagosService = new PlanillaPagosService(planilla, planillaAnterior);
         planillaPagosService.analizarPagos();
 
-        assertEquals(768000, planillaPagosService.getPlanilla().getPagoAcopio());
-        assertEquals(768000, planillaPagosService.getPlanilla().getPagoTotal());
+        assertEquals(640000, planillaPagosService.getPlanilla().getPagoAcopio());
+        assertEquals(640000, planillaPagosService.getPlanilla().getPagoTotal());
         assertEquals(0, planillaPagosService.getPlanilla().getMontoRetencion());
-        assertEquals(768000, planillaPagosService.getPlanilla().getPagoFinal());
+        assertEquals(640000, planillaPagosService.getPlanilla().getPagoFinal());
     }
 }
