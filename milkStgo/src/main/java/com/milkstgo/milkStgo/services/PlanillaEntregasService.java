@@ -28,7 +28,7 @@ public class PlanillaEntregasService {
     private int totalKlsLecheEntregados = 0;
     private int turnoManana = 0;
     private int turnoTarde = 0;
-    private int queTurnos= 0;
+    private int queTurnos = 0;
 
     public PlanillaEntregasService(PlanillaEntity planilla){
         this.planilla = planilla;
